@@ -1,15 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { Grid, Button, Typography, Box } from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Grid,
+  Button,
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import CheckIcon from "@mui/icons-material/Check";
 import KeyIcon from "@mui/icons-material/Key";
 import Calculator from "../Services/Calculator";
+import CorrectSound from "../Assets/correctSound.wav";
+import FailureSound from "../Assets/failureSound.wav";
+import { Link, animateScroll as scroll } from "react-scroll";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import Paper from "@mui/material/Paper";
+import ScrollIntoView from "react-scroll-into-view";
 
-const gd = [3, "A", "+", 2, "B", "-", 7];
-let summitRecord = new Set();
-
+const question = [
+  [3, "A", "+", 2, "B", "-", 7],
+  [2, "A", "+", "B"],
+  [5, "A", "+", 3, "B", "-", 6],
+  ["A", "-", 2, "B", "-", 1],
+];
+const questionNumber = Math.floor(Math.random() * question.length);
+const gd = question[questionNumber];
+const summittedRecordShow = new Set();
+const summittedRecord = new Set();
 const Appbody = () => {
+  //const gd = question[questionNumber];
   const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
   const [count, setCount] = useState(0);
   const [inputIndex, setInputIndex] = useState("");
@@ -19,6 +44,9 @@ const Appbody = () => {
   const [textfieldColorA, setTextfieldColorA] = useState("white");
   const [textfieldColorB, setTextfieldColorB] = useState("white");
   const [textfieldColorC, setTextfieldColorC] = useState("white");
+  const [keyIconColor, setKeyIconColor] = useState("Gray");
+  const [sumittedRecordTableRows, setSumittedRecordTableRows] = useState([]);
+
   const textfieldOnClick = (inputInd) => {
     if (inputInd === inputIndex) {
       setInputIndex("");
@@ -47,16 +75,31 @@ const Appbody = () => {
       return;
     }
     if (inputIndex === "A") {
-      const newValue = inputA ? 10 * inputA + inputNumber : inputNumber;
-      setInputA(newValue);
+      if (inputA === "") {
+        const newValue = inputNumber;
+        setInputA(newValue);
+      } else {
+        const newValue = String(inputA) + String(inputNumber);
+        setInputA(parseInt(newValue, 10));
+      }
     }
     if (inputIndex === "B") {
-      const newValue = inputB ? 10 * inputB + inputNumber : inputNumber;
-      setInputB(newValue);
+      if (inputA === "") {
+        const newValue = inputNumber;
+        setInputB(parseInt(newValue, 10));
+      } else {
+        const newValue = String(inputB) + String(inputNumber);
+        setInputB(parseInt(newValue, 10));
+      }
     }
     if (inputIndex === "C") {
-      const newValue = inputC ? 10 * inputC + inputNumber : inputNumber;
-      setInputC(newValue);
+      if (inputA === "") {
+        const newValue = inputNumber;
+        setInputC(parseInt(newValue, 10));
+      } else {
+        const newValue = String(inputC) + String(inputNumber);
+        setInputC(parseInt(newValue, 10));
+      }
     }
   };
   const backspaceButtonOnClick = () => {
@@ -81,222 +124,334 @@ const Appbody = () => {
       if (inputA === "") {
         setInputA("-");
       }
-      const newValue = Math.abs(inputA);
-      setInputA(newValue);
     }
 
     if (inputIndex === "B") {
-      const newValue = Math.abs(inputB);
-      setInputB(newValue);
+      if (inputB === "") {
+        setInputB("-");
+      }
     }
     if (inputIndex === "C") {
-      const newValue = Math.abs(parseInt(inputC));
-      setInputC(newValue);
+      if (inputC === "") {
+        setInputC("-");
+      }
     }
   };
 
   const submitButtonOnclick = () => {
+    console.log(questionNumber);
+    if (!inputA && !inputB && !inputC) {
+      return;
+    }
     let data = [...ansList];
+    let currentSummittedAnswer =
+      String(inputA) + "," + String(inputB) + "," + String(inputC);
 
-    if (Calculator.calculatorMethod(gd, inputA, inputB, inputC) === true) {
-      let summitABC = { A: inputA, B: inputB, C: inputC };
-      console.log(summitRecord);
-      if (!summitRecord.has(summitABC)) {
-        summitRecord.add(summitABC);
-        console.log(summitRecord);
-        data[count] = gd[count];
-        if (count >= gd.length) {
-          return;
-        }
-        setCount(count + 1);
-        setAnsList(data);
-        alert("correct");
+    if (summittedRecord.has(currentSummittedAnswer)) {
+      alert("重複");
+      return;
+    }
+
+    if (Calculator.calculatorMethod(gd, inputA, inputB) === parseInt(inputC)) {
+      summittedRecord.add(currentSummittedAnswer);
+      summittedRecordShow.add(currentSummittedAnswer + ",O");
+      data[count] = gd[count];
+      setCount(count + 1);
+      setAnsList(data);
+      setKeyIconColor("Gold");
+      new Audio(CorrectSound).play();
+      if (count >= gd.length) {
+        alert("過關");
+        window.location.reload();
+        return;
       }
     } else {
-      alert("false");
+      let correctAnswer = Calculator.calculatorMethod(gd, inputA, inputB);
+      summittedRecord.add(inputA + "," + inputB + "," + correctAnswer);
+      summittedRecord.add(currentSummittedAnswer);
+      console.log(summittedRecord);
+      summittedRecordShow.add(
+        currentSummittedAnswer + ",X " + " C = " + correctAnswer
+      );
+      setKeyIconColor("Gray");
+      new Audio(FailureSound).play();
     }
+    console.log(summittedRecordShow);
+    setInputA("");
+    setInputB("");
+    setInputC("");
+    let no = 1;
+    for (let item of summittedRecordShow) {
+      item = item.split(",");
+      setSumittedRecordTableRows(
+        sumittedRecordTableRows.concat([
+          createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
+        ])
+      );
+      no += 1;
+    }
+  };
+
+  const createSubmittedRecordTable = (no, A, B, C, results) => {
+    return { no, A, B, C, results };
   };
 
   return (
     <div>
-      <Grid
-        container
-        alignItems="center"
-        justifyContent="center"
-        style={{ height: "100px" }}
-      >
-        <Typography variant="h5">C =</Typography>
-        {ansList.map((value) => {
-          return (
-            <Box
-              sx={{
-                border: 1,
-                borderColor: "grey.500",
-                width: "30px",
-                height: "40px",
+      <section style={{ height: "90vh" }}>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "15vh" }}
+        >
+          <Typography variant="h5">C =</Typography>
+          {ansList.map((value) => {
+            return (
+              <Box
+                sx={{
+                  border: 1,
+                  borderColor: "grey.500",
+                  width: "30px",
+                  height: "40px",
+                }}
+              >
+                <Typography variant="h5">{value}</Typography>
+              </Box>
+            );
+          })}
+        </Grid>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "20vh" }}
+        >
+          <Grid>
+            <Grid container item alignItems="center" justifyContent="center">
+              <Typography>A</Typography>
+              <TextField
+                disabled
+                style={{ width: "100px", backgroundColor: textfieldColorA }}
+                variant="standard"
+                value={inputA}
+                onClick={() => {
+                  textfieldOnClick("A");
+                }}
+              />
+            </Grid>
+            <Grid
+              container
+              item
+              alignItems="center"
+              justifyContent="center"
+              sx={{ py: 1.5 }}
+            >
+              <Typography>B</Typography>
+              <TextField
+                disabled
+                style={{ width: "100px", backgroundColor: textfieldColorB }}
+                variant="standard"
+                value={inputB}
+                onClick={() => {
+                  textfieldOnClick("B");
+                }}
+              />
+            </Grid>
+            <Grid
+              container
+              item
+              alignItems="center"
+              justifyContent="center"
+              sx={{ ml: 1.5 }}
+            >
+              <Typography>C</Typography>
+              <TextField
+                disabled
+                style={{ width: "100px", backgroundColor: textfieldColorC }}
+                variant="standard"
+                value={inputC}
+                onClick={() => {
+                  textfieldOnClick("C");
+                }}
+              />
+
+              <KeyIcon alignItems="flex-end" sx={{ color: keyIconColor }} />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "80px" }}
+        >
+          <Button variant="outlined" onClick={submitButtonOnclick}>
+            <CheckIcon />
+            Summit
+          </Button>
+        </Grid>
+
+        <Grid
+          container
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "150px" }}
+        >
+          <Grid item justifyContent="center">
+            <Button
+              variant="outlined"
+              onClick={() => {
+                numberButtonOnClick(1);
               }}
             >
-              <Typography variant="h5">{value}</Typography>
-            </Box>
-          );
-        })}
-      </Grid>
-      <Grid
-        container
-        alignItems="center"
-        justifyContent="center"
-        style={{ height: "150px" }}
-      >
-        <Grid>
-          <Grid container item alignItems="center" justifyContent="flex-start">
-            <Typography>A</Typography>
-            <TextField
-              disabled
-              style={{ backgroundColor: textfieldColorA }}
-              variant="standard"
-              value={inputA}
+              1
+            </Button>
+            <Button
+              variant="outlined"
               onClick={() => {
-                textfieldOnClick("A");
+                numberButtonOnClick(2);
               }}
-            />
-          </Grid>
-          <Grid container item alignItems="center" justifyContent="flex-start">
-            <Typography>B</Typography>
-            <TextField
-              disabled
-              style={{ backgroundColor: textfieldColorB }}
-              variant="standard"
-              value={inputB}
+            >
+              2
+            </Button>
+            <Button
+              variant="outlined"
               onClick={() => {
-                textfieldOnClick("B");
+                numberButtonOnClick(3);
               }}
-            />
+            >
+              3
+            </Button>
           </Grid>
-          <Grid container item alignItems="center" justifyContent="flex-start">
-            <Typography>C</Typography>
-            <TextField
-              disabled
-              style={{ backgroundColor: textfieldColorC }}
-              variant="standard"
-              value={inputC}
+          <Grid item justifyContent="center">
+            <Button
+              variant="outlined"
               onClick={() => {
-                textfieldOnClick("C");
+                numberButtonOnClick(4);
               }}
-            />
-            <KeyIcon />
+            >
+              4
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                numberButtonOnClick(5);
+              }}
+            >
+              5
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                numberButtonOnClick(6);
+              }}
+            >
+              6
+            </Button>
           </Grid>
-        </Grid>
-      </Grid>
-      <Grid style={{ height: "50px" }}>
-        <Button variant="outlined" onClick={submitButtonOnclick}>
-          <CheckIcon />
-          Summit
-        </Button>
-      </Grid>
+          <Grid item justifyContent="center">
+            <Button
+              variant="outlined"
+              onClick={() => {
+                numberButtonOnClick(7);
+              }}
+            >
+              7
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                numberButtonOnClick(8);
+              }}
+            >
+              8
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                numberButtonOnClick(9);
+              }}
+            >
+              9
+            </Button>
+          </Grid>
+          <Grid item justifyContent="center">
+            <Button variant="outlined" onClick={backspaceButtonOnClick}>
+              <BackspaceIcon />
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                numberButtonOnClick(0);
+              }}
+            >
+              0
+            </Button>
 
-      <Grid
-        container
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        style={{ height: "150px" }}
-      >
-        <Grid item justifyContent="center">
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(1);
-            }}
-          >
-            1
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(2);
-            }}
-          >
-            2
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(3);
-            }}
-          >
-            3
-          </Button>
+            <Button variant="outlined" onClick={minusButtonOnclick}>
+              (-)
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item justifyContent="center">
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(4);
-            }}
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "10vh" }}
+          mt={2}
+        >
+          <Link
+            activeClass="active"
+            to="summittedRecord"
+            spy={true}
+            smooth={true}
+            offset={-70}
+            duration={500}
           >
-            4
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(5);
-            }}
-          >
-            5
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(6);
-            }}
-          >
-            6
-          </Button>
+            <Button variant="outlined">
+              <ArrowDownwardIcon />
+              Sumitted Record
+            </Button>
+          </Link>
         </Grid>
-        <Grid item justifyContent="center">
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(7);
-            }}
-          >
-            7
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(8);
-            }}
-          >
-            8
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(9);
-            }}
-          >
-            9
-          </Button>
+      </section>
+      <section id="summittedRecord">
+        <Grid container alignItems="center" justifyContent="center">
+          <TableContainer style={{ width: "350px" }} component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ width: "30px" }} align="center">
+                    No.
+                  </TableCell>
+                  <TableCell align="center">A</TableCell>
+                  <TableCell align="center">B</TableCell>
+                  <TableCell align="center">C</TableCell>
+                  <TableCell align="center">Results</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sumittedRecordTableRows.map((row) => (
+                  <TableRow
+                    key={row.no}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.no}
+                    </TableCell>
+                    <TableCell align="center">{row.A}</TableCell>
+                    <TableCell align="center">{row.B}</TableCell>
+                    <TableCell align="center">{row.C}</TableCell>
+                    <TableCell align="center">{row.results}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
-        <Grid item justifyContent="center">
-          <Button variant="outlined" onClick={backspaceButtonOnClick}>
-            <BackspaceIcon />
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              numberButtonOnClick(0);
-            }}
-          >
-            0
-          </Button>
-
-          <Button variant="outlined" onClick={minusButtonOnclick}>
-            (-)
-          </Button>
-        </Grid>
-      </Grid>
+      </section>
     </div>
   );
 };
