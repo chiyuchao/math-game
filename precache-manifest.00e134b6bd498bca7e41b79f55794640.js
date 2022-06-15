@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "db29f0adbdbbb365de5d",
+    "revision": "002dc83528ff26850517",
     "url": "/math-game/static/css/main.fea596ce.chunk.css"
   },
   {
-    "revision": "db29f0adbdbbb365de5d",
-    "url": "/math-game/static/js/main.db29f0ad.chunk.js"
+    "revision": "002dc83528ff26850517",
+    "url": "/math-game/static/js/main.002dc835.chunk.js"
   },
   {
     "revision": "5fc6eca808e7c1951395",
@@ -28,7 +28,7 @@ self.__precacheManifest = [
     "url": "/math-game/static/media/correctSound.38029e5a.wav"
   },
   {
-    "revision": "6840c57684c44e190c4eefc33f6848d0",
+    "revision": "658835301ce067f072a63c378645011b",
     "url": "/math-game/index.html"
   }
 ];
