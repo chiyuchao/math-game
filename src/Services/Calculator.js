@@ -12,7 +12,6 @@ const Calculator = {
     }
     if ((b === "+") | (b === "-")) {
       b = b + "1";
-      console.log(b);
     }
 
     if (indexB + 1 === gd.length) {
@@ -25,7 +24,7 @@ const Calculator = {
       parseInt(a) * parseInt(inputA) +
       parseInt(b) * parseInt(inputB) +
       parseInt(constant);
-    console.log(b);
+
     return answer;
   },
 };

@@ -22,19 +22,25 @@ import { Link, animateScroll as scroll } from "react-scroll";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import Paper from "@mui/material/Paper";
 import ScrollIntoView from "react-scroll-into-view";
+import Stages from "../questionBase";
+import { useParams } from "react-router-dom";
+import { ProductionQuantityLimits } from "@mui/icons-material";
+import questionBase from "../questionBase";
+import toast from "react-hot-toast";
 
-const question = [
-  [3, "A", "+", 2, "B", "-", 7],
-  [2, "A", "+", "B"],
-  [5, "A", "+", 3, "B", "-", 6],
-  ["A", "-", 2, "B", "-", 1],
-];
-const questionNumber = Math.floor(Math.random() * question.length);
-const gd = question[questionNumber];
 const summittedRecordShow = new Set();
 const summittedRecord = new Set();
 const Appbody = () => {
-  //const gd = question[questionNumber];
+  const { id } = useParams();
+  const levelCreated = questionBase.data.length;
+  if (id > levelCreated) {
+    return (window.location.href = "/NewLevelPage");
+  }
+  const level = questionBase.data.find((level) => level.id === id);
+  const { difficulty, question } = level;
+  //console.log(question);
+  const gd = question;
+
   const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
   const [count, setCount] = useState(0);
   const [inputIndex, setInputIndex] = useState("");
@@ -139,7 +145,6 @@ const Appbody = () => {
   };
 
   const submitButtonOnclick = () => {
-    console.log(questionNumber);
     if (!inputA && !inputB && !inputC) {
       return;
     }
@@ -160,9 +165,12 @@ const Appbody = () => {
       setAnsList(data);
       setKeyIconColor("Gold");
       new Audio(CorrectSound).play();
-      if (count >= gd.length) {
+      console.log(count);
+      console.log(gd.length);
+
+      if (count + 1 === gd.length) {
         alert("過關");
-        window.location.reload();
+        window.location.href = `/level-select/${parseInt(id) + 1}`;
         return;
       }
     } else {
@@ -176,7 +184,7 @@ const Appbody = () => {
       setKeyIconColor("Gray");
       new Audio(FailureSound).play();
     }
-    console.log(summittedRecordShow);
+    //console.log(summittedRecordShow);
     setInputA("");
     setInputB("");
     setInputC("");

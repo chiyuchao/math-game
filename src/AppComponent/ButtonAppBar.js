@@ -24,11 +24,10 @@ const ButtonAppBar = () => {
             edge="start"
             color="inherit"
             aria-label="menu"
-            // sx={{ mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
-          {/* <Button color="inherit">Login</Button> */}
+
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             This is your title
           </Typography>
