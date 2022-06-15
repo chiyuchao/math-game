@@ -13,9 +13,15 @@ const App = () => {
       <div className="App">
         <ButtonAppBar />
         <Routes>
-          <Route exact path="/" element={<LevelSelect />}></Route>
-          <Route path="/level-select/:id" element={<Appbody />}></Route>
-          <Route path="/NewLevelPage" element={<NewLevelPage />}></Route>
+          <Route exact path="/math-game" element={<LevelSelect />}></Route>
+          <Route
+            path="/math-game/level-select/:id"
+            element={<Appbody />}
+          ></Route>
+          <Route
+            path="/math-game/NewLevelPage"
+            element={<NewLevelPage />}
+          ></Route>
           <Route path="*" element={<ErrorPage />}></Route>
         </Routes>
       </div>
