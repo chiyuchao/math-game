@@ -199,7 +199,7 @@ const Appbody = () => {
 
     if (Calculator.calculatorMethod(gd, inputA, inputB) === parseInt(inputC)) {
       summittedRecord.add(currentSummittedAnswer);
-      summittedRecordShow.add(currentSummittedAnswer + ",O");
+      summittedRecordShow.add(currentSummittedAnswer + ",正確");
       data[count] = gd[count];
       setCount(count + 1);
       setAnsList(data);
@@ -220,7 +220,7 @@ const Appbody = () => {
       summittedRecord.add(currentSummittedAnswer);
       console.log(summittedRecord);
       summittedRecordShow.add(
-        currentSummittedAnswer + ",X " + " C = " + correctAnswer
+        currentSummittedAnswer + ",錯誤 " + " C = " + correctAnswer
       );
       setKeyIconColor("Gray");
       new Audio(FailureSound).play();
@@ -252,11 +252,7 @@ const Appbody = () => {
     } else {
       window.location.href = `#/level-select/${parseInt(id) + 1}`;
       window.location.reload();
-
-      //NextLevelButtonOnClick();
     }
-
-    // window.location.href = `#/level-select/${parseInt(id) + 1}`;
   };
 
   return (
