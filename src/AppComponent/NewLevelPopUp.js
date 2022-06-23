@@ -7,7 +7,7 @@ import {
   Typography,
   Grid,
 } from "@mui/material";
-import HelpIcon from "@mui/icons-material/Help";
+import { Link } from "react-router-dom";
 
 const style = {
   outline: 0,
@@ -22,16 +22,13 @@ const style = {
   p: 4,
 };
 
-export default function PopUp({ showPopup }) {
-  const [open, setOpen] = React.useState(showPopup);
+export default function NextLevelPopUp({ component }) {
+  const [open, setOpen] = React.useState(true);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   return (
     <div>
-      <IconButton sx={{ color: "White" }} onClick={handleOpen}>
-        <HelpIcon />
-      </IconButton>
       <Modal
         open={open}
         onClose={handleClose}
@@ -45,32 +42,20 @@ export default function PopUp({ showPopup }) {
             variant="h6"
             component="h2"
           >
-            遊戲說明
+            未完待續...
           </Typography>
           <Typography
             align="center"
             id="modal-modal-description"
             sx={{ mt: 2, mb: 2 }}
           >
-            輸入正確ABC組合解開密碼
-          </Typography>
-          <Typography
-            align="center"
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-          >
-            遊戲目標
-          </Typography>
-          <Typography
-            align="center"
-            id="modal-modal-description"
-            sx={{ mt: 2 }}
-          >
-            每輸入正確一次 ，可以解開一格密碼， 將所有密碼解開獲勝
+            新的關卡正在開發中!
           </Typography>
           <Button sx={{ mt: 2 }} align="center" onClick={handleClose}>
-            close
+            關閉
+          </Button>
+          <Button sx={{ mt: 2 }} align="center">
+            <Link to={`/level-select/`}></Link>
           </Button>
         </Grid>
       </Modal>

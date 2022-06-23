@@ -1,5 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  DialogActions,
+  Slide,
+  Dialog,
+  SpeedDial,
+  Modal,
+  Snackbar,
   Grid,
   Button,
   Typography,
@@ -18,27 +27,28 @@ import KeyIcon from "@mui/icons-material/Key";
 import Calculator from "../Services/Calculator";
 import CorrectSound from "../Assets/correctSound.wav";
 import FailureSound from "../Assets/failureSound.wav";
+import GameClearanceSound from "../Assets/gameClearanceSound.wav";
 import { Link, animateScroll as scroll } from "react-scroll";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import Paper from "@mui/material/Paper";
-import ScrollIntoView from "react-scroll-into-view";
-import Stages from "../questionBase";
 import { useParams } from "react-router-dom";
 import { ProductionQuantityLimits } from "@mui/icons-material";
 import questionBase from "../questionBase";
-import toast from "react-hot-toast";
+import NewLevelPopUp from "./NewLevelPopUp";
+import { SpeedDialIcon } from "@mui/material";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useNavigate } from "react-router-dom";
+import Popup from "./Popup";
+import { TransitionProps } from "@mui/material/transitions";
 
 const summittedRecordShow = new Set();
 const summittedRecord = new Set();
 const Appbody = () => {
   const { id } = useParams();
   const levelCreated = questionBase.data.length;
-  if (id > levelCreated) {
-    return (window.location.href = "/NewLevelPage");
-  }
   const level = questionBase.data.find((level) => level.id === id);
   const { difficulty, question } = level;
-  //console.log(question);
+
   const gd = question;
 
   const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
@@ -52,6 +62,36 @@ const Appbody = () => {
   const [textfieldColorC, setTextfieldColorC] = useState("white");
   const [keyIconColor, setKeyIconColor] = useState("Gray");
   const [sumittedRecordTableRows, setSumittedRecordTableRows] = useState([]);
+  const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
+  const handleClickOpen = () => {
+    setnewLevelDialogueOpen(true);
+  };
+
+  const handleNewLevelDialogueClose = () => {
+    setnewLevelDialogueOpen(false);
+  };
+  const [duplicateSnackbarOpen, setduplicateSnackbarOpen] = useState(false);
+  const handleDuplicateSnackbarOpen = () => {
+    setduplicateSnackbarOpen(true);
+  };
+
+  const handleduplicateSnackbarClose = () => {
+    setduplicateSnackbarOpen(false);
+  };
+  const [hidden, setHidden] = useState(true);
+  const navigate = useNavigate();
+  const NextLevelButtonOnClick = useCallback(
+    () => navigate(`/level-select/${parseInt(id) + 1}`, { replace: true }),
+    [navigate]
+  );
+  const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & {
+      children: React.ReactElement<any, any>,
+    },
+    ref: React.Ref<unknown>
+  ) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
   const textfieldOnClick = (inputInd) => {
     if (inputInd === inputIndex) {
@@ -145,7 +185,7 @@ const Appbody = () => {
   };
 
   const submitButtonOnclick = () => {
-    if (!inputA && !inputB && !inputC) {
+    if (inputA.length === 0 || inputB.length === 0 || inputC.length === 0) {
       return;
     }
     let data = [...ansList];
@@ -153,7 +193,7 @@ const Appbody = () => {
       String(inputA) + "," + String(inputB) + "," + String(inputC);
 
     if (summittedRecord.has(currentSummittedAnswer)) {
-      alert("重複");
+      setduplicateSnackbarOpen(true);
       return;
     }
 
@@ -169,8 +209,9 @@ const Appbody = () => {
       console.log(gd.length);
 
       if (count + 1 === gd.length) {
-        alert("過關");
-        window.location.href = `/level-select/${parseInt(id) + 1}`;
+        setTimeout(() => {}, 1000);
+        new Audio(GameClearanceSound).play();
+        setHidden(false);
         return;
       }
     } else {
@@ -204,16 +245,73 @@ const Appbody = () => {
     return { no, A, B, C, results };
   };
 
+  const NextLevelButton = () => {
+    if (id === String(levelCreated)) {
+      setnewLevelDialogueOpen(true);
+      return;
+    } else {
+      window.location.href = `#/level-select/${parseInt(id) + 1}`;
+      window.location.reload();
+
+      //NextLevelButtonOnClick();
+    }
+
+    // window.location.href = `#/level-select/${parseInt(id) + 1}`;
+  };
+
   return (
     <div>
-      <section style={{ height: "90vh" }}>
+      <SpeedDial
+        FabProps={{ size: "medium", style: { backgroundColor: "#509993" } }}
+        type="reset"
+        hidden={hidden}
+        onClick={NextLevelButton}
+        ariaLabel="SpeedDial openIcon example"
+        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        icon={<ArrowForwardIcon />}
+      ></SpeedDial>
+      <Dialog
+        open={newLevelDialogueOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleNewLevelDialogueClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"未完待續..."}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            新的關卡正在開發中!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleNewLevelDialogueClose}>確定</Button>
+          <Button
+            onClick={() => {
+              window.location.href = "/level-select/";
+            }}
+          >
+            回首頁
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={duplicateSnackbarOpen}
+        onClose={handleduplicateSnackbarClose}
+        message="這組答案已經輸入過了!"
+        autoHideDuration="2000"
+      />
+      <section style={{ height: "90vh", backgroundColor: "#FAF9F9" }}>
         <Grid
           container
           alignItems="center"
           justifyContent="center"
           style={{ height: "15vh" }}
         >
-          <Typography variant="h5">C =</Typography>
+          <Typography style={{ width: "50px" }} variant="h5" color="#523D42">
+            C =
+          </Typography>
           {ansList.map((value) => {
             return (
               <Box
@@ -237,10 +335,15 @@ const Appbody = () => {
         >
           <Grid>
             <Grid container item alignItems="center" justifyContent="center">
-              <Typography>A</Typography>
+              <Typography style={{ width: "40px" }} color="#523D42">
+                A
+              </Typography>
               <TextField
                 disabled
-                style={{ width: "100px", backgroundColor: textfieldColorA }}
+                style={{
+                  width: "100px",
+                  backgroundColor: textfieldColorA,
+                }}
                 variant="standard"
                 value={inputA}
                 onClick={() => {
@@ -255,7 +358,9 @@ const Appbody = () => {
               justifyContent="center"
               sx={{ py: 1.5 }}
             >
-              <Typography>B</Typography>
+              <Typography style={{ width: "40px" }} color="#523D42">
+                B
+              </Typography>
               <TextField
                 disabled
                 style={{ width: "100px", backgroundColor: textfieldColorB }}
@@ -273,7 +378,9 @@ const Appbody = () => {
               justifyContent="center"
               sx={{ ml: 1.5 }}
             >
-              <Typography>C</Typography>
+              <Typography style={{ width: "40px" }} color="#523D42">
+                C
+              </Typography>
               <TextField
                 disabled
                 style={{ width: "100px", backgroundColor: textfieldColorC }}
@@ -294,7 +401,12 @@ const Appbody = () => {
           justifyContent="center"
           style={{ height: "80px" }}
         >
-          <Button variant="outlined" onClick={submitButtonOnclick}>
+          <Button
+            sx={{ borderColor: "#BBCCB4", color: "#FAF9F9" }}
+            style={{ backgroundColor: "#BBCCB4" }}
+            variant="outlined"
+            onClick={submitButtonOnclick}
+          >
             <CheckIcon />
             Summit
           </Button>
@@ -418,7 +530,11 @@ const Appbody = () => {
             offset={-70}
             duration={500}
           >
-            <Button variant="outlined">
+            <Button
+              sx={{ borderColor: "#BBCCB4", color: "#FAF9F9" }}
+              style={{ backgroundColor: "#BBCCB4" }}
+              variant="outlined"
+            >
               <ArrowDownwardIcon />
               Sumitted Record
             </Button>
@@ -460,6 +576,7 @@ const Appbody = () => {
           </TableContainer>
         </Grid>
       </section>
+      <Popup showPopup={id === "1"}></Popup>
     </div>
   );
 };
