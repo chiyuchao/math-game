@@ -40,6 +40,9 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 import Popup from "./Popup";
 import { TransitionProps } from "@mui/material/transitions";
+import introJs from "intro.js";
+import "intro.js/introjs.css";
+import { Steps, Hints } from "intro.js-react";
 
 const summittedRecordShow = new Set();
 const summittedRecord = new Set();
@@ -48,7 +51,6 @@ const Appbody = () => {
   const levelCreated = questionBase.data.length;
   const level = questionBase.data.find((level) => level.id === id);
   const { difficulty, question } = level;
-
   const gd = question;
 
   const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
@@ -84,6 +86,50 @@ const Appbody = () => {
     () => navigate(`/level-select/${parseInt(id) + 1}`, { replace: true }),
     [navigate]
   );
+
+  const steps = [
+    {
+      title: "Guess My Rule",
+      intro: "Hello👋</br>這是一個需要你幫忙<b>破解密碼</b>的益智遊戲。",
+    },
+    {
+      title: "遊戲目標",
+      intro: "每一關的破關密碼都是一串有A,B,C三個未知數的方程式💁‍♀️",
+    },
+
+    {
+      title: "遊戲目標",
+      intro:
+        "每輸入一組可以帶入這個方程式中成立的組合，就可以解開一格密碼，</br>將所有密碼格解開就可以進入下一關⏩",
+    },
+    {
+      title: "遊戲目標",
+      intro:
+        "你可能可以從已經輸入過的答案中找出一些規律，去推測破關密碼的方程式👁‍🗨</br>挑戰用<b>最少組的正確解答</b>過關吧🎉",
+    },
+    {
+      title: "遊戲導覽",
+      element: "#password",
+      intro: "這邊是我們要解的密碼，C在等號的左邊，A和B則隱藏在等號的右邊",
+    },
+
+    {
+      title: "遊戲導覽",
+      element: "#answerArea",
+      intro: "這邊可以輸入你想試試看的ABC組合，按提交就可以送出答案",
+    },
+    {
+      title: "遊戲導覽",
+      element: "#summittedRecord",
+      intro: "按鈕可以下滑頁面看到你之前提交過的答案組合📜",
+    },
+    {
+      title: "遊戲導覽",
+      intro:
+        "還是不清楚怎麼破解密碼?有示範影片🎬</br>或是結束導覽，開始遊戲吧~",
+    },
+  ];
+  const onExit = () => {};
   const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
       children: React.ReactElement<any, any>,
@@ -148,6 +194,7 @@ const Appbody = () => {
       }
     }
   };
+
   const backspaceButtonOnClick = () => {
     if (!inputIndex) {
       return;
@@ -298,14 +345,22 @@ const Appbody = () => {
         message="這組答案已經輸入過了!"
         autoHideDuration="2000"
       />
-      <section style={{ height: "90vh",}}>
+
+
+      <section
+        style={{ height: "90vh",}}
+        id="step1"
+      >
+
         <Grid
+          id="password"
           container
           alignItems="center"
           justifyContent="center"
           style={{ height: "15vh" }}
         >
-          <Typography  className="hexagon" variant="h5" color="#523D42">
+
+          <Typography id="cElement" className="hexagon" variant="h5" color="#523D42">
             C
           </Typography>
           <Typography className="hexagon" variant="h5" color="#523D42">
@@ -313,11 +368,15 @@ const Appbody = () => {
           </Typography>
           {ansList.map((value) => {
             return (
-                <Typography className="hexagon" variant="h5">{value}</Typography>
+                <Typography id="abElement" className="hexagon" variant="h5">{value}</Typography>
+
+
             );
           })}
         </Grid>
+
         <Grid
+          id="answerArea"
           container
           alignItems="center"
           justifyContent="center"
@@ -575,7 +634,17 @@ const Appbody = () => {
           </TableContainer>
         </Grid>
       </section>
-      <Popup showPopup={id === "1"}></Popup>
+      <Steps
+        enabled={true}
+        steps={steps}
+        initialStep={0}
+        onExit={onExit}
+        options={{
+          nextLabel: "下一步",
+          prevLabel: "上一步",
+          doneLabel: "完成",
+        }}
+      />
     </div>
   );
 };
