@@ -15,7 +15,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 300,
+  width: 350,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -52,8 +52,14 @@ export default function PopUp({ showPopup }) {
             id="modal-modal-description"
             sx={{ mt: 2, mb: 2 }}
           >
-            輸入正確ABC組合解開密碼
+            每一關的破關密碼都是一串有A,B,C三個未知數的算式。
+            但有部分的密碼需要被解開， 嘗試輸入正確ABC組合來打開完整的密碼串吧!
           </Typography>
+          <Typography
+            align="center"
+            id="modal-modal-description"
+            sx={{ mb: 2 }}
+          ></Typography>
           <Typography
             align="center"
             id="modal-modal-title"
@@ -67,7 +73,8 @@ export default function PopUp({ showPopup }) {
             id="modal-modal-description"
             sx={{ mt: 2 }}
           >
-            每輸入正確一次 ，可以解開一格密碼， 將所有密碼解開獲勝
+            每輸入一組正確的答案組合 ，可以解開一格密碼，
+            將所有密碼解開就過關了!
           </Typography>
           <Button sx={{ mt: 2 }} align="center" onClick={handleClose}>
             close
