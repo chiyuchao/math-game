@@ -354,10 +354,7 @@ const Appbody = () => {
         autoHideDuration="2000"
       />
 
-      <section
-        style={{ height: "90vh", backgroundColor: "#FAF9F9" }}
-        id="step1"
-      >
+      <section style={{ height: "90vh" }} id="step1">
         <Grid
           id="password"
           container
@@ -367,26 +364,20 @@ const Appbody = () => {
         >
           <Typography
             id="cElement"
-            style={{ width: "50px" }}
+            className="hexagon"
             variant="h5"
             color="#523D42"
           >
-            C =
+            C
+          </Typography>
+          <Typography className="hexagon" variant="h5" color="#523D42">
+            =
           </Typography>
           {ansList.map((value) => {
             return (
-              <Box
-                sx={{
-                  border: 1,
-                  borderColor: "grey.500",
-                  width: "30px",
-                  height: "40px",
-                }}
-              >
-                <Typography id="abElement" variant="h5">
-                  {value}
-                </Typography>
-              </Box>
+              <Typography id="abElement" className="hexagon" variant="h5">
+                {value}
+              </Typography>
             );
           })}
         </Grid>
@@ -400,17 +391,15 @@ const Appbody = () => {
         >
           <Grid>
             <Grid container item alignItems="center" justifyContent="center">
-              <Typography style={{ width: "40px" }} color="#523D42">
+              <Typography color="#523D42" className="hexagonIpuntLeft1">
                 A
               </Typography>
               <TextField
                 disabled
-                style={{
-                  width: "100px",
-                  backgroundColor: textfieldColorA,
-                }}
+                className="hexagonIpuntRight1"
                 variant="standard"
                 value={inputA}
+                InputProps={{ disableUnderline: true }}
                 onClick={() => {
                   textfieldOnClick("A");
                 }}
@@ -423,14 +412,15 @@ const Appbody = () => {
               justifyContent="center"
               sx={{ py: 1.5 }}
             >
-              <Typography style={{ width: "40px" }} color="#523D42">
+              <Typography color="#523D42" className="hexagonIpuntLeft2">
                 B
               </Typography>
               <TextField
                 disabled
-                style={{ width: "100px", backgroundColor: textfieldColorB }}
+                className="hexagonIpuntRight2"
                 variant="standard"
                 value={inputB}
+                InputProps={{ disableUnderline: true }}
                 onClick={() => {
                   textfieldOnClick("B");
                 }}
@@ -443,14 +433,15 @@ const Appbody = () => {
               justifyContent="center"
               sx={{ ml: 1.5 }}
             >
-              <Typography style={{ width: "40px" }} color="#523D42">
+              <Typography className="hexagonIpuntLeft3" color="#523D42">
                 C
               </Typography>
               <TextField
                 disabled
-                style={{ width: "100px", backgroundColor: textfieldColorC }}
                 variant="standard"
+                className="hexagonIpuntRight3"
                 value={inputC}
+                InputProps={{ disableUnderline: true }}
                 onClick={() => {
                   textfieldOnClick("C");
                 }}
@@ -460,34 +451,23 @@ const Appbody = () => {
             </Grid>
           </Grid>
         </Grid>
+        <br />
         <Grid
           container
           alignItems="center"
           justifyContent="center"
           style={{ height: "80px" }}
         >
-          <Grid
-            container
-            item
-            alignItems="center"
-            justifyContent="center"
-            sx={{ ml: 7 }}
+          <Button
+            className="submitBtn"
+            sx={{ color: "#523D42" }}
+            onClick={submitButtonOnclick}
           >
-            <Button
-              alignItems="center"
-              justify="flex-end"
-              sx={{ borderColor: "#BBCCB4", color: "#FAF9F9" }}
-              style={{ backgroundColor: "#BBCCB4" }}
-              variant="outlined"
-              onClick={submitButtonOnclick}
-            >
-              <CheckIcon />
-              Summit
-            </Button>
-            <IconButton size="large">
-              <LightbulbIcon onClick={hintButtonOnclick} />
-            </IconButton>
-          </Grid>
+            Submit
+          </Button>
+          <IconButton size="large">
+            <LightbulbIcon onClick={hintButtonOnclick} />
+          </IconButton>
         </Grid>
 
         <Grid
@@ -495,11 +475,12 @@ const Appbody = () => {
           direction="column"
           alignItems="center"
           justifyContent="center"
-          style={{ height: "150px" }}
+          style={{ height: "200px" }}
         >
           <Grid item justifyContent="center">
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(1);
               }}
@@ -507,7 +488,8 @@ const Appbody = () => {
               1
             </Button>
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(2);
               }}
@@ -515,7 +497,8 @@ const Appbody = () => {
               2
             </Button>
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(3);
               }}
@@ -525,7 +508,8 @@ const Appbody = () => {
           </Grid>
           <Grid item justifyContent="center">
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(4);
               }}
@@ -533,7 +517,8 @@ const Appbody = () => {
               4
             </Button>
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(5);
               }}
@@ -541,7 +526,8 @@ const Appbody = () => {
               5
             </Button>
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(6);
               }}
@@ -551,7 +537,8 @@ const Appbody = () => {
           </Grid>
           <Grid item justifyContent="center">
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(7);
               }}
@@ -559,7 +546,8 @@ const Appbody = () => {
               7
             </Button>
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(8);
               }}
@@ -567,7 +555,8 @@ const Appbody = () => {
               8
             </Button>
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(9);
               }}
@@ -576,11 +565,16 @@ const Appbody = () => {
             </Button>
           </Grid>
           <Grid item justifyContent="center">
-            <Button variant="outlined" onClick={backspaceButtonOnClick}>
+            <Button
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
+              onClick={backspaceButtonOnClick}
+            >
               <BackspaceIcon />
             </Button>
             <Button
-              variant="outlined"
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
               onClick={() => {
                 numberButtonOnClick(0);
               }}
@@ -588,7 +582,11 @@ const Appbody = () => {
               0
             </Button>
 
-            <Button variant="outlined" onClick={minusButtonOnclick}>
+            <Button
+              className="hexagonBtn"
+              sx={{ color: "#523D42" }}
+              onClick={minusButtonOnclick}
+            >
               (-)
             </Button>
           </Grid>
@@ -608,17 +606,14 @@ const Appbody = () => {
             offset={-70}
             duration={500}
           >
-            <Button
-              sx={{ borderColor: "#BBCCB4", color: "#FAF9F9" }}
-              style={{ backgroundColor: "#BBCCB4" }}
-              variant="outlined"
-            >
+            <Button sx={{ color: "white" }} className="recordBtn">
               <ArrowDownwardIcon />
-              Sumitted Record
+              Record
             </Button>
           </Link>
         </Grid>
       </section>
+      <br />
       <section id="summittedRecord">
         <Grid container alignItems="center" justifyContent="center">
           <TableContainer style={{ width: "350px" }} component={Paper}>
