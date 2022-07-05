@@ -19,6 +19,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  IconButton,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import BackspaceIcon from "@mui/icons-material/Backspace";
@@ -43,6 +44,7 @@ import { TransitionProps } from "@mui/material/transitions";
 import introJs from "intro.js";
 import "intro.js/introjs.css";
 import { Steps, Hints } from "intro.js-react";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
 
 const summittedRecordShow = new Set();
 const summittedRecord = new Set();
@@ -287,6 +289,12 @@ const Appbody = () => {
       no += 1;
     }
   };
+  const hintButtonOnclick = () => {
+    let data = [...ansList];
+    data[count] = gd[count];
+    setCount(count + 1);
+    setAnsList(data);
+  };
 
   const createSubmittedRecordTable = (no, A, B, C, results) => {
     return { no, A, B, C, results };
@@ -458,15 +466,28 @@ const Appbody = () => {
           justifyContent="center"
           style={{ height: "80px" }}
         >
-          <Button
-            sx={{ borderColor: "#BBCCB4", color: "#FAF9F9" }}
-            style={{ backgroundColor: "#BBCCB4" }}
-            variant="outlined"
-            onClick={submitButtonOnclick}
+          <Grid
+            container
+            item
+            alignItems="center"
+            justifyContent="center"
+            sx={{ ml: 7 }}
           >
-            <CheckIcon />
-            Summit
-          </Button>
+            <Button
+              alignItems="center"
+              justify="flex-end"
+              sx={{ borderColor: "#BBCCB4", color: "#FAF9F9" }}
+              style={{ backgroundColor: "#BBCCB4" }}
+              variant="outlined"
+              onClick={submitButtonOnclick}
+            >
+              <CheckIcon />
+              Summit
+            </Button>
+            <IconButton size="large">
+              <LightbulbIcon onClick={hintButtonOnclick} />
+            </IconButton>
+          </Grid>
         </Grid>
 
         <Grid
@@ -634,7 +655,7 @@ const Appbody = () => {
         </Grid>
       </section>
       <Steps
-        enabled={true}
+        enabled={id === "1"}
         steps={steps}
         initialStep={0}
         onExit={onExit}
