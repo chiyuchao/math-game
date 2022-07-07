@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "d19b8dc9de93d760e272",
+    "revision": "13b14533ee4efe1f0b73",
     "url": "/math-game/static/css/main.1320b061.chunk.css"
   },
   {
-    "revision": "d19b8dc9de93d760e272",
-    "url": "/math-game/static/js/main.d19b8dc9.chunk.js"
+    "revision": "13b14533ee4efe1f0b73",
+    "url": "/math-game/static/js/main.13b14533.chunk.js"
   },
   {
     "revision": "607825a7dd57f03fb184",
@@ -36,10 +36,6 @@ self.__precacheManifest = [
     "url": "/math-game/static/media/failureSound.1472b5cf.wav"
   },
   {
-    "revision": "68c575172b75a2af7e2a330d460ac8c1",
-    "url": "/math-game/static/media/submit.68c57517.png"
-  },
-  {
     "revision": "844d24ebac76599c29a1616897136870",
     "url": "/math-game/static/media/hex.844d24eb.png"
   },
@@ -52,7 +48,11 @@ self.__precacheManifest = [
     "url": "/math-game/static/media/record.77b27396.png"
   },
   {
-    "revision": "351f0757965f7717a88943db4e039583",
+    "revision": "68c575172b75a2af7e2a330d460ac8c1",
+    "url": "/math-game/static/media/submit.68c57517.png"
+  },
+  {
+    "revision": "78deb51fc1ea8308c9635a0c1e3fc398",
     "url": "/math-game/index.html"
   }
 ];
