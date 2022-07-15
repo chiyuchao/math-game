@@ -27,6 +27,7 @@ import BackspaceIcon from "@mui/icons-material/Backspace";
 import CheckIcon from "@mui/icons-material/Check";
 import KeyIcon from "@mui/icons-material/Key";
 import Calculator from "../Services/Calculator";
+import Rest from "../Services/Rest";
 import CorrectSound from "../Assets/correctSound.wav";
 import FailureSound from "../Assets/failureSound.wav";
 import GameClearanceSound from "../Assets/gameClearanceSound.wav";
@@ -46,13 +47,14 @@ import introJs from "intro.js";
 import "intro.js/introjs.css";
 import { Steps, Hints } from "intro.js-react";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
-import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const submittedRecordShow = new Set();
 const submittedRecord = new Set();
 const Appbody = () => {
   const { id } = useParams();
+  const { userid } = useParams();
+
   const levelCreated = questionBase.data.length;
   const level = questionBase.data.find((level) => level.id === id);
   const { difficulty, question } = level;
@@ -71,8 +73,8 @@ const Appbody = () => {
   const [hintIconColor, setHintIconColor] = useState("");
   const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState([]);
   const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
-  const [levelcompletedModalOpen, setLevelcompletedModalOpen] = useState(true);
-  const [stepEnable, setStepEnable] = useState("true");
+  const [levelcompletedModalOpen, setLevelcompletedModalOpen] = useState(false);
+  const [stepEnable, setStepEnable] = useState(true);
   const handleClickOpen = () => {
     setnewLevelDialogueOpen(true);
   };
@@ -87,7 +89,6 @@ const Appbody = () => {
   const handleduplicateSnackbarClose = () => {
     setduplicateSnackbarOpen(false);
   };
-  const [hidden, setHidden] = useState(true);
   const [hintButtondisabled, sethintButtondisabled] = useState(false);
   const [hintDialogOpen, setHintDialogOpen] = useState(false);
 
@@ -143,18 +144,6 @@ const Appbody = () => {
         "還是不清楚怎麼破解密碼?有示範影片🎬</br>或是結束導覽，開始遊戲吧~",
     },
   ];
-  // const onExit = () => {
-  //   console.log("onExit");
-  //   setStepEnable(false);
-  // };
-  // const Transition = React.forwardRef(function Transition(
-  //   props: TransitionProps & {
-  //     children: React.ReactElement<any, any>,
-  //   },
-  //   ref: React.Ref<unknown>
-  // ) {
-  //   return <Slide direction="up" ref={ref} {...props} />;
-  // });
 
   const textfieldOnClick = (inputInd) => {
     if (inputInd === inputIndex) {
@@ -263,6 +252,8 @@ const Appbody = () => {
     }
 
     if (Calculator.calculatorMethod(gd, inputA, inputB) === parseInt(inputC)) {
+      const timestamp = Date.now();
+      Rest.userSubmit(userid, currentSubmittedAnswer, "correct", timestamp);
       submittedRecord.add(currentSubmittedAnswer);
       submittedRecordShow.add(currentSubmittedAnswer + ",正確");
       data[count] = gd[count];
@@ -276,7 +267,6 @@ const Appbody = () => {
       if (count + 1 === gd.length) {
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
-        setHidden(false);
         setLevelcompletedModalOpen(true);
         return;
       }
@@ -285,6 +275,8 @@ const Appbody = () => {
       submittedRecord.add(inputA + "," + inputB + "," + correctAnswer);
       submittedRecord.add(currentSubmittedAnswer);
       console.log(submittedRecord);
+      const timestamp = Date.now();
+      Rest.userSubmit(userid, currentSubmittedAnswer, "incorrect", timestamp);
       submittedRecordShow.add(
         currentSubmittedAnswer + ",錯誤 " + " C = " + correctAnswer
       );
@@ -307,6 +299,8 @@ const Appbody = () => {
     }
   };
   const hintButtonOnclick = () => {
+    const timestamp = Date().toLocaleString();
+    Rest.userUseHint(userid, "useHint", timestamp);
     let data = [...ansList];
     data[count] = gd[count];
     setCount(count + 1);
@@ -333,7 +327,7 @@ const Appbody = () => {
       setnewLevelDialogueOpen(true);
       return;
     } else {
-      window.location.href = `#/level-select/${parseInt(id) + 1}`;
+      window.location.href = `#/level-select/${parseInt(id) + 1}/${userid}`;
       window.location.reload();
     }
   };
@@ -787,7 +781,9 @@ const Appbody = () => {
         enabled={stepEnable && id === "1"}
         steps={steps}
         initialStep={0}
-        onExit={() => {}}
+        onExit={() => {
+          setStepEnable(false);
+        }}
         // onStart={() => {
         //   setStepEnable(false);
         // }}

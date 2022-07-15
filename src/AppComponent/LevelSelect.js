@@ -4,9 +4,13 @@ import { Link } from "react-router-dom";
 import questionBase from "../questionBase";
 import LocalFloristIcon from "@mui/icons-material/LocalFlorist";
 import { Box } from "@mui/system";
+import { v4 as uuid } from "uuid";
 
 function LevelSelect() {
   console.log(questionBase);
+
+  const unique_id = uuid();
+
   return (
     <div>
       <Box>
@@ -27,12 +31,12 @@ function LevelSelect() {
                 <Button
                   size="small"
                   sx={{ borderColor: "#509993", color: "#57555E" }}
-                  href={`#/level-select/${question.id}`}
+                  href={`#/level-select/${question.id}/${unique_id}`}
                   variant="outlined"
                   startIcon={<LocalFloristIcon sx={{ color: "#FF7070" }} />}
                   key={question.id}
                 >
-                  {question.difficulty}
+                  {question.id}
                 </Button>
               </grid>
             );
