@@ -6,8 +6,11 @@ import LevelSelect from "./AppComponent/LevelSelect";
 import ErrorPage from "./AppComponent/ErrorPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HashRouter } from "react-router-dom";
+import { useCookies } from "react-cookie";
+
 const App = () => {
-  console.log("app");
+  const [cookies, setCookie] = useCookies(["user"]);
+
   return (
     <HashRouter>
       <div className="App">

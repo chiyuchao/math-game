@@ -35,19 +35,12 @@ import { Link, animateScroll as scroll } from "react-scroll";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import Paper from "@mui/material/Paper";
 import { useParams } from "react-router-dom";
-import { ProductionQuantityLimits } from "@mui/icons-material";
 import questionBase from "../questionBase";
-import NewLevelPopUp from "./NewLevelPopUp";
-import { SpeedDialIcon } from "@mui/material";
-import { ArrowForwardIcon } from "@mui/icons-material/ArrowForward";
-import { useNavigate } from "react-router-dom";
-import Popup from "./Popup";
-import { TransitionProps } from "@mui/material/transitions";
-import introJs from "intro.js";
 import "intro.js/introjs.css";
 import { Steps, Hints } from "intro.js-react";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { useCookies } from "react-cookie";
 
 const submittedRecordShow = new Set();
 const submittedRecord = new Set();
@@ -59,6 +52,9 @@ const Appbody = () => {
   const level = questionBase.data.find((level) => level.id === id);
   const { difficulty, question } = level;
   const gd = question;
+
+  const [cookies, setCookie, removeCookie] = useCookies(["currentCount"]);
+  console.log(cookies.currentCount);
 
   const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
   const [count, setCount] = useState(0);
@@ -115,7 +111,8 @@ const Appbody = () => {
     {
       title: "遊戲導覽",
       element: "#password",
-      intro: "這邊是我們要解的密碼，C在等號的左邊，A和B則隱藏在等號的右邊",
+      intro:
+        "這邊是我們要解的密碼串，C在等號的左邊，A和B則隱藏在等號的右邊，其他密碼格可能是常數或是括號",
     },
 
     {
@@ -297,8 +294,11 @@ const Appbody = () => {
       );
       no += 1;
     }
+    setCookie("currentCount", count);
+    setCookie("record", submittedRecordShow, { path: "/" });
   };
   const hintButtonOnclick = () => {
+    setCookie("hint", "used", { path: "/" });
     const timestamp = Date().toLocaleString();
     Rest.userUseHint(userid, "useHint", timestamp);
     let data = [...ansList];
@@ -311,6 +311,7 @@ const Appbody = () => {
       setTimeout(() => {}, 1000);
       new Audio(GameClearanceSound).play();
       setLevelcompletedModalOpen(true);
+      removeCookie();
       return;
     }
     setHintDialogOpen(false);
@@ -362,6 +363,7 @@ const Appbody = () => {
         keepMounted
         onClose={() => {
           setLevelcompletedModalOpen(false);
+          NextLevelButton();
         }}
         aria-describedby="alert-dialog-slide-description"
       >
