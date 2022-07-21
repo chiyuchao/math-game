@@ -3,35 +3,64 @@ const Calculator = {
     const indexA = gd.indexOf("A");
     const indexB = gd.indexOf("B");
     if (gd.includes("(")) {
-      // 目前有括號的題目，每個係數只能是一位數
-      const coefficient = parseInt(gd[0]);
-      let a;
-      let b = gd.slice(indexA + 1, indexB).join("");
-      let constant;
-      if (indexA === 2) {
-        a = coefficient;
-      } else {
-        a = coefficient * parseInt(gd[2]);
-      }
-      if ((b === "+") | (b === "-")) {
-        b = parseInt(b + "1") * coefficient;
-      } else {
-        b = b * coefficient;
-      }
+      if (gd.indexOf("(") === 0) {
+        // 目前有括號的題目，每個係數只能是一位數
+        const coefficient = parseInt(gd[0]);
+        let a;
+        let b = gd.slice(indexA + 1, indexB).join("");
+        let constant;
+        if (indexA === 2) {
+          a = coefficient;
+        } else {
+          a = coefficient * parseInt(gd[2]);
+        }
+        if ((b === "+") | (b === "-")) {
+          b = parseInt(b + "1") * coefficient;
+        } else {
+          b = b * coefficient;
+        }
 
-      if (indexB + 2 === gd.length) {
-        constant = "0";
+        if (indexB + 2 === gd.length) {
+          constant = "0";
+        } else {
+          constant = gd.slice(indexB + 2, gd.length).join("");
+        }
+        const answer =
+          parseInt(a) * parseInt(inputA) +
+          parseInt(b) * parseInt(inputB) +
+          parseInt(constant);
+        console.log(a);
+        console.log(b);
+        console.log(constant);
+        return answer;
       } else {
-        constant = gd.slice(indexB + 2, gd.length).join("");
+        const coefficient = parseInt(gd[gd.indexOf("(") - 1]);
+        let a;
+        let b = gd[indexB - 1];
+        let constant;
+        if (indexA === 0) {
+          a = "1";
+        } else {
+          a = gd.slice(0, indexA).join("");
+        }
+        if (b === "(") {
+          b = coefficient;
+        } else {
+          b = b * coefficient;
+        }
+
+        constant = gd.slice(indexB + 1, gd.indexOf(")")).join("") * coefficient;
+
+        const answer =
+          parseInt(a) * parseInt(inputA) +
+          parseInt(b) * parseInt(inputB) +
+          parseInt(constant);
+
+        console.log(a);
+        console.log(b);
+        console.log(constant);
+        return answer;
       }
-      const answer =
-        parseInt(a) * parseInt(inputA) +
-        parseInt(b) * parseInt(inputB) +
-        parseInt(constant);
-      console.log(a);
-      console.log(b);
-      console.log(constant);
-      return answer;
     }
     if (indexA < indexB) {
       console.log("b在後面");

@@ -13,8 +13,18 @@ function LevelSelect() {
 
   return (
     <div>
-      <Box>
-        <Grid
+      <Box height="100vh" sx={{ backgroundColor: "white" }}>
+        <Button
+          align="center"
+          size="big"
+          sx={{ borderColor: "#509993", color: "#57555E", mt: 5 }}
+          href={`#/level-select/1/${unique_id}`}
+          variant="outlined"
+          startIcon={<LocalFloristIcon sx={{ color: "#FF7070" }} />}
+        >
+          start
+        </Button>
+        {/* <Grid
           style={{ minwidth: "80%" }}
           container
           alignItems="center"
@@ -41,7 +51,7 @@ function LevelSelect() {
               </grid>
             );
           })}
-        </Grid>
+        </Grid> */}
       </Box>
     </div>
   );
