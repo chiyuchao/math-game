@@ -3,7 +3,7 @@ const Calculator = {
     const indexA = gd.indexOf("A");
     const indexB = gd.indexOf("B");
     if (gd.includes("(")) {
-      if (gd.indexOf("(") === 0) {
+      if (gd.indexOf("(") === 1) {
         // 目前有括號的題目，每個係數只能是一位數
         const coefficient = parseInt(gd[0]);
         let a;
@@ -17,7 +17,7 @@ const Calculator = {
         if ((b === "+") | (b === "-")) {
           b = parseInt(b + "1") * coefficient;
         } else {
-          b = b * coefficient;
+          b = parseInt(b) * coefficient;
         }
 
         if (indexB + 2 === gd.length) {
@@ -34,7 +34,7 @@ const Calculator = {
         console.log(constant);
         return answer;
       } else {
-        const coefficient = parseInt(gd[gd.indexOf("(") - 1]);
+        const coefficient = gd.slice(indexA + 1, gd.indexOf("(")).join("");
         let a;
         let b = gd[indexB - 1];
         let constant;
@@ -49,13 +49,16 @@ const Calculator = {
           b = b * coefficient;
         }
 
-        constant = gd.slice(indexB + 1, gd.indexOf(")")).join("") * coefficient;
+        constant =
+          parseInt(gd.slice(indexB + 1, gd.indexOf(")")).join("")) *
+          coefficient;
 
         const answer =
           parseInt(a) * parseInt(inputA) +
           parseInt(b) * parseInt(inputB) +
           parseInt(constant);
 
+        console.log(coefficient);
         console.log(a);
         console.log(b);
         console.log(constant);

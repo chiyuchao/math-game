@@ -22,7 +22,7 @@ export const data = [
   {
     id: "13",
     difficulty: "level 4",
-    question: [2, "(", "A", "+", 2, "B", ")", "+", 3],
+    question: [2, "(", "A", "+", "B", ")", "+", 3],
   },
   {
     id: "14",
