@@ -40,7 +40,7 @@ import "intro.js/introjs.css";
 import { Steps, Hints } from "intro.js-react";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { useCookies } from "react-cookie";
+import { Cookies, useCookies } from "react-cookie";
 
 const submittedRecordShow = new Set();
 const submittedRecord = new Set();
@@ -53,11 +53,26 @@ const Appbody = () => {
   const { difficulty, question } = level;
   const gd = question;
 
-  const [cookies, setCookie, removeCookie] = useCookies(["currentCount"]);
-  console.log(cookies.currentCount);
+  const [cookies, setCookie, removeCookie] = useCookies(
+    ["ansList"],
+    ["count"],
+    ["submittedRecordTableRows"],
+    ["hint"],
+    ["hintIconColor"]
+  );
 
-  const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
-  const [count, setCount] = useState(0);
+  // removeCookie(["ansList"]);
+  // removeCookie(["hint"]);
+  // removeCookie(["hintIconColor"]);
+  // removeCookie(["count"]);
+  // removeCookie(["submittedRecordTableRows"]);
+
+  const [ansList, setAnsList] = useState(
+    cookies.ansList ? cookies.ansList : Array(gd.length).fill(" ")
+  );
+  const [count, setCount] = useState(
+    cookies.count ? parseInt(cookies.count) + 1 : 0
+  );
   const [inputIndex, setInputIndex] = useState("");
   const [inputA, setInputA] = useState("");
   const [inputB, setInputB] = useState("");
@@ -66,8 +81,10 @@ const Appbody = () => {
   const [textfieldColorB, setTextfieldColorB] = useState("");
   const [textfieldColorC, setTextfieldColorC] = useState("");
   const [keyIconColor, setKeyIconColor] = useState("Gray");
-  const [hintIconColor, setHintIconColor] = useState("");
-  const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState([]);
+  const [hintIconColor, setHintIconColor] = useState(cookies.hintIconColor);
+  const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState(
+    cookies.submittedRecordTableRows ? cookies.submittedRecordTableRows : []
+  );
   const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
   const [levelcompletedModalOpen, setLevelcompletedModalOpen] = useState(false);
   const [stepEnable, setStepEnable] = useState(true);
@@ -85,9 +102,11 @@ const Appbody = () => {
   const handleduplicateSnackbarClose = () => {
     setduplicateSnackbarOpen(false);
   };
-  const [hintButtondisabled, sethintButtondisabled] = useState(false);
+  const [hintButtondisabled, sethintButtondisabled] = useState(cookies.hint);
+
   const [hintDialogOpen, setHintDialogOpen] = useState(false);
 
+  console.log(count);
   const steps = [
     {
       title: "Guess My Rule",
@@ -165,7 +184,6 @@ const Appbody = () => {
         break;
     }
   };
-  console.log("here");
   const numberButtonOnClick = (inputNumber) => {
     if (!inputIndex) {
       return;
@@ -249,31 +267,42 @@ const Appbody = () => {
     }
 
     if (Calculator.calculatorMethod(gd, inputA, inputB) === parseInt(inputC)) {
-      const timestamp = Date.now();
-      Rest.userSubmit(userid, currentSubmittedAnswer, "correct", timestamp);
+      Rest.userSubmit(userid, id, currentSubmittedAnswer, "correct");
       submittedRecord.add(currentSubmittedAnswer);
       submittedRecordShow.add(currentSubmittedAnswer + ",正確");
       data[count] = gd[count];
       setCount(count + 1);
       setAnsList(data);
       setKeyIconColor("Gold");
+      setCookie("count", parseInt(count), { path: "/" });
+      let cookies = [...ansList];
+      cookies[count + 1] = gd[count + 1];
+
+      setCookie("ansList", data, { path: "/" });
+
       new Audio(CorrectSound).play();
-      console.log(count);
-      console.log(gd.length);
+      // console.log(count);
+      // console.log(gd.length);
 
       if (count + 1 === gd.length) {
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
         setLevelcompletedModalOpen(true);
+        removeCookie(["ansList"]);
+        removeCookie(["hint"]);
+        removeCookie(["hintIconColor"]);
+        removeCookie(["count"]);
+        removeCookie(["submittedRecordTableRows"]);
+
         return;
       }
     } else {
       let correctAnswer = Calculator.calculatorMethod(gd, inputA, inputB);
       submittedRecord.add(inputA + "," + inputB + "," + correctAnswer);
       submittedRecord.add(currentSubmittedAnswer);
-      console.log(submittedRecord);
-      const timestamp = Date.now();
-      Rest.userSubmit(userid, currentSubmittedAnswer, "incorrect", timestamp);
+      //console.log(submittedRecord);
+
+      Rest.userSubmit(userid, id, currentSubmittedAnswer, "incorrect");
       submittedRecordShow.add(
         currentSubmittedAnswer + ",錯誤 " + " C = " + correctAnswer
       );
@@ -292,31 +321,49 @@ const Appbody = () => {
           createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
         ])
       );
+      setCookie(
+        "submittedRecordTableRows",
+        submittedRecordTableRows.concat([
+          createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
+        ]),
+        { path: "/" }
+      );
       no += 1;
     }
-    setCookie("currentCount", count);
-    setCookie("record", submittedRecordShow, { path: "/" });
+    // console.log(count);
+    // console.log(submittedRecordTableRows);
   };
   const hintButtonOnclick = () => {
-    setCookie("hint", "used", { path: "/" });
-    const timestamp = Date().toLocaleString();
-    Rest.userUseHint(userid, "useHint", timestamp);
+    Rest.userUseHint(userid, id, count);
     let data = [...ansList];
+
     data[count] = gd[count];
     setCount(count + 1);
     setAnsList(data);
+    let cookies = [...ansList];
+    cookies[count + 1] = gd[count + 1];
+
+    setCookie("ansList", data, { path: "/" });
     sethintButtondisabled(true);
     new Audio(CorrectSound).play();
+    setHintDialogOpen(false);
+    setHintIconColor("yellow");
+    setCookie("hint", true, { path: "/" });
+    setCookie("hintIconColor", "yellow", { path: "/" });
+    setCookie("count", parseInt(count), { path: "/" });
+    console.log("使用提示");
     if (count + 1 === gd.length) {
       setTimeout(() => {}, 1000);
       new Audio(GameClearanceSound).play();
       setLevelcompletedModalOpen(true);
-      removeCookie();
+      removeCookie(["ansList"]);
+      removeCookie(["hint"]);
+      removeCookie(["hintIconColor"]);
+      removeCookie(["count"]);
+      removeCookie(["submittedRecordTableRows"]);
+
       return;
     }
-    setHintDialogOpen(false);
-    setHintIconColor("yellow");
-    console.log("使用提示");
   };
 
   const createSubmittedRecordTable = (no, A, B, C, results) => {
