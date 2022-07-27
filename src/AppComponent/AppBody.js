@@ -254,7 +254,14 @@ const Appbody = () => {
   };
 
   const submitButtonOnclick = () => {
-    if (inputA.length === 0 || inputB.length === 0 || inputC.length === 0) {
+    if (
+      inputA.length === 0 ||
+      inputA === "-" ||
+      inputB.length === 0 ||
+      inputB === "-" ||
+      inputC.length === 0 ||
+      inputC === "-"
+    ) {
       return;
     }
     let data = [...ansList];
