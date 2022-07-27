@@ -20,12 +20,14 @@ import {
   TableHead,
   TableRow,
   IconButton,
+  TextField,
+  Tooltip,
 } from "@mui/material";
-import TextField from "@mui/material/TextField";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import CheckIcon from "@mui/icons-material/Check";
 import KeyIcon from "@mui/icons-material/Key";
 import Calculator from "../Services/Calculator";
+import Rest from "../Services/Rest";
 import CorrectSound from "../Assets/correctSound.wav";
 import FailureSound from "../Assets/failureSound.wav";
 import GameClearanceSound from "../Assets/gameClearanceSound.wav";
@@ -33,44 +35,62 @@ import { Link, animateScroll as scroll } from "react-scroll";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import Paper from "@mui/material/Paper";
 import { useParams } from "react-router-dom";
-import { ProductionQuantityLimits } from "@mui/icons-material";
 import questionBase from "../questionBase";
-import NewLevelPopUp from "./NewLevelPopUp";
-import { SpeedDialIcon } from "@mui/material";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useNavigate } from "react-router-dom";
-import Popup from "./Popup";
-import { TransitionProps } from "@mui/material/transitions";
-import introJs from "intro.js";
 import "intro.js/introjs.css";
 import { Steps, Hints } from "intro.js-react";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { Cookies, useCookies } from "react-cookie";
 
-const summittedRecordShow = new Set();
-const summittedRecord = new Set();
+const submittedRecordShow = new Set();
+const submittedRecord = new Set();
 const Appbody = () => {
   const { id } = useParams();
+  const { userid } = useParams();
+
   const levelCreated = questionBase.data.length;
   const level = questionBase.data.find((level) => level.id === id);
   const { difficulty, question } = level;
   const gd = question;
 
-  const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
-  const [count, setCount] = useState(0);
+  const [cookies, setCookie, removeCookie] = useCookies(
+    ["ansList"],
+    ["count"],
+    ["submittedRecordTableRows"],
+    ["hint"],
+    ["hintIconColor"]
+  );
+
+  // removeCookie(["ansList"]);
+  // removeCookie(["hint"]);
+  // removeCookie(["hintIconColor"]);
+  // removeCookie(["count"]);
+  // removeCookie(["record"]);
+
+  const [ansList, setAnsList] = useState(
+    cookies.ansList ? cookies.ansList : Array(gd.length).fill(" ")
+  );
+  const [count, setCount] = useState(
+    cookies.count ? parseInt(cookies.count) + 1 : 0
+  );
   const [inputIndex, setInputIndex] = useState("");
   const [inputA, setInputA] = useState("");
   const [inputB, setInputB] = useState("");
   const [inputC, setInputC] = useState("");
-  const [textfieldColorA, setTextfieldColorA] = useState("white");
-  const [textfieldColorB, setTextfieldColorB] = useState("white");
-  const [textfieldColorC, setTextfieldColorC] = useState("white");
+  const [textfieldColorA, setTextfieldColorA] = useState("");
+  const [textfieldColorB, setTextfieldColorB] = useState("");
+  const [textfieldColorC, setTextfieldColorC] = useState("");
   const [keyIconColor, setKeyIconColor] = useState("Gray");
-  const [sumittedRecordTableRows, setSumittedRecordTableRows] = useState([]);
+  const [hintIconColor, setHintIconColor] = useState(cookies.hintIconColor);
+  const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState(
+    cookies.submittedRecordTableRowst ? cookies.submittedRecordTableRows : []
+  );
   const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
+  const [levelcompletedModalOpen, setLevelcompletedModalOpen] = useState(false);
+  const [stepEnable, setStepEnable] = useState(true);
   const handleClickOpen = () => {
     setnewLevelDialogueOpen(true);
   };
-
   const handleNewLevelDialogueClose = () => {
     setnewLevelDialogueOpen(false);
   };
@@ -82,13 +102,11 @@ const Appbody = () => {
   const handleduplicateSnackbarClose = () => {
     setduplicateSnackbarOpen(false);
   };
-  const [hidden, setHidden] = useState(true);
-  const navigate = useNavigate();
-  const NextLevelButtonOnClick = useCallback(
-    () => navigate(`/level-select/${parseInt(id) + 1}`, { replace: true }),
-    [navigate]
-  );
+  const [hintButtondisabled, sethintButtondisabled] = useState(cookies.hint);
 
+  const [hintDialogOpen, setHintDialogOpen] = useState(false);
+
+  console.log(count);
   const steps = [
     {
       title: "Guess My Rule",
@@ -112,7 +130,8 @@ const Appbody = () => {
     {
       title: "遊戲導覽",
       element: "#password",
-      intro: "這邊是我們要解的密碼，C在等號的左邊，A和B則隱藏在等號的右邊",
+      intro:
+        "這邊是我們要解的密碼串，C在等號的左邊，A和B則隱藏在等號的右邊，其他密碼格可能是常數或是括號",
     },
 
     {
@@ -122,8 +141,18 @@ const Appbody = () => {
     },
     {
       title: "遊戲導覽",
-      element: "#summittedRecord",
+      element: "#key",
+      intro: "如果輸入的答案帶入方程式成立，鑰匙會亮起來，並打開一格密碼。",
+    },
+    {
+      title: "遊戲導覽",
+      element: "#submittedRecord",
       intro: "按鈕可以下滑頁面看到你之前提交過的答案組合📜",
+    },
+    {
+      title: "遊戲導覽",
+      element: "#hintButton",
+      intro: "如果需要一點提示，可以點選這邊，但每關只能使用一次喔!",
     },
     {
       title: "遊戲導覽",
@@ -131,15 +160,6 @@ const Appbody = () => {
         "還是不清楚怎麼破解密碼?有示範影片🎬</br>或是結束導覽，開始遊戲吧~",
     },
   ];
-  const onExit = () => {};
-  const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & {
-      children: React.ReactElement<any, any>,
-    },
-    ref: React.Ref<unknown>
-  ) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
 
   const textfieldOnClick = (inputInd) => {
     if (inputInd === inputIndex) {
@@ -149,17 +169,17 @@ const Appbody = () => {
     switch (inputInd) {
       case "A":
         setTextfieldColorA("#BEBEBE");
-        setTextfieldColorB("white");
-        setTextfieldColorC("white");
+        setTextfieldColorB("");
+        setTextfieldColorC("");
         break;
       case "B":
-        setTextfieldColorA("white");
+        setTextfieldColorA("");
         setTextfieldColorB("#BEBEBE");
-        setTextfieldColorC("white");
+        setTextfieldColorC("");
         break;
       case "C":
-        setTextfieldColorA("white");
-        setTextfieldColorB("white");
+        setTextfieldColorA("");
+        setTextfieldColorB("");
         setTextfieldColorC("#BEBEBE");
         break;
     }
@@ -238,62 +258,101 @@ const Appbody = () => {
       return;
     }
     let data = [...ansList];
-    let currentSummittedAnswer =
+    let currentSubmittedAnswer =
       String(inputA) + "," + String(inputB) + "," + String(inputC);
 
-    if (summittedRecord.has(currentSummittedAnswer)) {
+    if (submittedRecord.has(currentSubmittedAnswer)) {
       setduplicateSnackbarOpen(true);
       return;
     }
 
     if (Calculator.calculatorMethod(gd, inputA, inputB) === parseInt(inputC)) {
-      summittedRecord.add(currentSummittedAnswer);
-      summittedRecordShow.add(currentSummittedAnswer + ",正確");
+      Rest.userSubmit(userid, id, currentSubmittedAnswer, "correct");
+      submittedRecord.add(currentSubmittedAnswer);
+      submittedRecordShow.add(currentSubmittedAnswer + ",正確");
       data[count] = gd[count];
       setCount(count + 1);
       setAnsList(data);
       setKeyIconColor("Gold");
+      setCookie("count", parseInt(count), { path: "/" });
+      let cookies = [...ansList];
+      cookies[count + 1] = gd[count + 1];
+
+      setCookie("ansList", data, { path: "/" });
+
       new Audio(CorrectSound).play();
-      console.log(count);
-      console.log(gd.length);
+      // console.log(count);
+      // console.log(gd.length);
 
       if (count + 1 === gd.length) {
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
-        setHidden(false);
+        removeCookie(["hint"]);
+        removeCookie(["hintIconColor"]);
+        setLevelcompletedModalOpen(true);
+
+        removeCookie("count", { path: "/" });
+        // removeCookie("record", { path: "/" });
         return;
       }
     } else {
       let correctAnswer = Calculator.calculatorMethod(gd, inputA, inputB);
-      summittedRecord.add(inputA + "," + inputB + "," + correctAnswer);
-      summittedRecord.add(currentSummittedAnswer);
-      console.log(summittedRecord);
-      summittedRecordShow.add(
-        currentSummittedAnswer + ",錯誤 " + " C = " + correctAnswer
+      submittedRecord.add(inputA + "," + inputB + "," + correctAnswer);
+      submittedRecord.add(currentSubmittedAnswer);
+      //console.log(submittedRecord);
+
+      Rest.userSubmit(userid, id, currentSubmittedAnswer, "incorrect");
+      submittedRecordShow.add(
+        currentSubmittedAnswer + ",錯誤 " + " C = " + correctAnswer
       );
       setKeyIconColor("Gray");
       new Audio(FailureSound).play();
     }
-    //console.log(summittedRecordShow);
+    //console.log(submittedRecordShow);
     setInputA("");
     setInputB("");
     setInputC("");
     let no = 1;
-    for (let item of summittedRecordShow) {
+    for (let item of submittedRecordShow) {
       item = item.split(",");
-      setSumittedRecordTableRows(
-        sumittedRecordTableRows.concat([
+      setSubmittedRecordTableRows(
+        submittedRecordTableRows.concat([
           createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
         ])
       );
       no += 1;
     }
+    // console.log(count);
+    // console.log(submittedRecordTableRows);
   };
   const hintButtonOnclick = () => {
+    Rest.userUseHint(userid, id, "useHint");
     let data = [...ansList];
+
     data[count] = gd[count];
     setCount(count + 1);
     setAnsList(data);
+    let cookies = [...ansList];
+    cookies[count + 1] = gd[count + 1];
+
+    setCookie("ansList", data, { path: "/" });
+    sethintButtondisabled(true);
+    new Audio(CorrectSound).play();
+    setHintDialogOpen(false);
+    setHintIconColor("yellow");
+    setCookie("hint", true, { path: "/" });
+    setCookie("hintIconColor", "yellow", { path: "/" });
+    setCookie("count", parseInt(count), { path: "/" });
+    console.log("使用提示");
+    if (count + 1 === gd.length) {
+      setTimeout(() => {}, 1000);
+      new Audio(GameClearanceSound).play();
+      setLevelcompletedModalOpen(true);
+      removeCookie(["count"]);
+      removeCookie(["hint"]);
+      removeCookie(["hintIconColor"]);
+      return;
+    }
   };
 
   const createSubmittedRecordTable = (no, A, B, C, results) => {
@@ -305,28 +364,18 @@ const Appbody = () => {
       setnewLevelDialogueOpen(true);
       return;
     } else {
-      window.location.href = `#/level-select/${parseInt(id) + 1}`;
+      window.location.href = `#/level-select/${parseInt(id) + 1}/${userid}`;
       window.location.reload();
     }
   };
 
   return (
     <div>
-      <SpeedDial
-        FabProps={{ size: "medium", style: { backgroundColor: "#509993" } }}
-        type="reset"
-        hidden={hidden}
-        onClick={NextLevelButton}
-        ariaLabel="SpeedDial openIcon example"
-        sx={{ position: "absolute", bottom: 16, right: 16 }}
-        icon={<ArrowForwardIcon />}
-      ></SpeedDial>
       <Dialog
         open={newLevelDialogueOpen}
-        TransitionComponent={Transition}
-        keepMounted
+        //TransitionComponent={Transition}
+
         onClose={handleNewLevelDialogueClose}
-        aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"未完待續..."}</DialogTitle>
         <DialogContent>
@@ -335,7 +384,7 @@ const Appbody = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleNewLevelDialogueClose}>確定</Button>
+          <Button onClick={handleNewLevelDialogueClose}></Button>
           <Button
             onClick={() => {
               window.location.href = "/level-select/";
@@ -343,6 +392,51 @@ const Appbody = () => {
           >
             回首頁
           </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={levelcompletedModalOpen}
+        keepMounted
+        onClose={() => {
+          setLevelcompletedModalOpen(false);
+          NextLevelButton();
+        }}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle align="center">{"🎉恭喜過關🎉"}</DialogTitle>
+        <DialogContent align="center">
+          <DialogContentText id="alert-dialog-slide-description">
+            總共嘗試了 <b>{submittedRecordTableRows.length + 1}</b> 次<br></br>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Grid container alignItems="center" justifyContent="center">
+            {/* <Button
+            variant="outlined"
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            <AutorenewIcon />
+          </Button>
+            <Button
+              
+              variant="outlined"
+              onClick={() => {
+                window.location.href = "/level-select/";
+              }}
+            >
+              回首頁
+            </Button> */}
+            <Button
+              sx={{ alignContent: "center", width: "150px" }}
+              variant="outlined"
+              onClick={NextLevelButton}
+            >
+              下一關
+              <ArrowForwardIosIcon />
+            </Button>
+          </Grid>
         </DialogActions>
       </Dialog>
 
@@ -355,6 +449,10 @@ const Appbody = () => {
       />
 
       <section style={{ height: "90vh" }} id="step1">
+        <h1 style={{ color: "rgba(52, 52, 52, 0.5)", height: "5px" }}>
+          Level {id}
+        </h1>
+
         <Grid
           id="password"
           container
@@ -373,9 +471,13 @@ const Appbody = () => {
           <Typography className="hexagon" variant="h5" color="#523D42">
             =
           </Typography>
-          {ansList.map((value) => {
+
+          {ansList.map((value, index) => {
             return (
-              <Typography id="abElement" className="hexagon" variant="h5">
+              <Typography
+                className={index === count - 1 ? "instantFeedback" : "hexagon"}
+                variant="h5"
+              >
                 {value}
               </Typography>
             );
@@ -383,18 +485,21 @@ const Appbody = () => {
         </Grid>
 
         <Grid
-          id="answerArea"
           container
           alignItems="center"
           justifyContent="center"
           style={{ height: "20vh" }}
         >
-          <Grid>
+          <Grid id="answerArea">
             <Grid container item alignItems="center" justifyContent="center">
-              <Typography color="#523D42" className="hexagonIpuntLeft1">
+              <Typography
+                bgcolor={textfieldColorA}
+                className="hexagonIpuntLeft1"
+              >
                 A
               </Typography>
               <TextField
+                sx={{ bgcolor: textfieldColorA }}
                 disabled
                 className="hexagonIpuntRight1"
                 variant="standard"
@@ -412,10 +517,14 @@ const Appbody = () => {
               justifyContent="center"
               sx={{ py: 1.5 }}
             >
-              <Typography color="#523D42" className="hexagonIpuntLeft2">
+              <Typography
+                bgcolor={textfieldColorB}
+                className="hexagonIpuntLeft2"
+              >
                 B
               </Typography>
               <TextField
+                sx={{ bgcolor: textfieldColorB }}
                 disabled
                 className="hexagonIpuntRight2"
                 variant="standard"
@@ -433,7 +542,10 @@ const Appbody = () => {
               justifyContent="center"
               sx={{ ml: 1.5 }}
             >
-              <Typography className="hexagonIpuntLeft3" color="#523D42">
+              <Typography
+                className="hexagonIpuntLeft3"
+                bgcolor={textfieldColorC}
+              >
                 C
               </Typography>
               <TextField
@@ -442,12 +554,17 @@ const Appbody = () => {
                 className="hexagonIpuntRight3"
                 value={inputC}
                 InputProps={{ disableUnderline: true }}
+                sx={{ bgcolor: textfieldColorC }}
                 onClick={() => {
                   textfieldOnClick("C");
                 }}
               />
 
-              <KeyIcon alignItems="flex-end" sx={{ color: keyIconColor }} />
+              <KeyIcon
+                id="key"
+                alignItems="flex-end"
+                sx={{ color: keyIconColor }}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -456,17 +573,58 @@ const Appbody = () => {
           container
           alignItems="center"
           justifyContent="center"
-          style={{ height: "80px" }}
+          style={{ height: "70px" }}
         >
           <Button
             className="submitBtn"
-            sx={{ color: "#523D42" }}
+            sx={{ color: "#523D42", ml: 5.5 }}
             onClick={submitButtonOnclick}
           >
             Submit
           </Button>
-          <IconButton size="large">
-            <LightbulbIcon onClick={hintButtonOnclick} />
+          <Dialog
+            open={hintDialogOpen}
+            onClose={() => {
+              setHintDialogOpen(false);
+            }}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">{"使用提示"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                要使用提示打開一格密碼嗎 ? 一關只能使用一次喔!
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setHintDialogOpen(false);
+                }}
+              >
+                再想想
+              </Button>
+              <Button onClick={hintButtonOnclick} autoFocus>
+                好
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <IconButton
+            id="hintButton"
+            disabled={hintButtondisabled}
+            size="large"
+          >
+            <Tooltip title="使用提示">
+              <LightbulbIcon
+                sx={{
+                  color: hintIconColor,
+                  mb: 1,
+                }}
+                onClick={() => {
+                  setHintDialogOpen(true);
+                }}
+              />
+            </Tooltip>
           </IconButton>
         </Grid>
 
@@ -595,12 +753,12 @@ const Appbody = () => {
           container
           alignItems="center"
           justifyContent="center"
-          style={{ height: "10vh" }}
-          mt={2}
+          style={{ height: "50px" }}
+          mt={1}
         >
           <Link
             activeClass="active"
-            to="summittedRecord"
+            to="submittedRecord"
             spy={true}
             smooth={true}
             offset={-70}
@@ -614,8 +772,13 @@ const Appbody = () => {
         </Grid>
       </section>
       <br />
-      <section id="summittedRecord">
-        <Grid container alignItems="center" justifyContent="center">
+      <section id="submittedRecord">
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mt: 4.5, mb: 4 }}
+        >
           <TableContainer style={{ width: "350px" }} component={Paper}>
             <Table>
               <TableHead>
@@ -630,7 +793,7 @@ const Appbody = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sumittedRecordTableRows.map((row) => (
+                {submittedRecordTableRows.map((row) => (
                   <TableRow
                     key={row.no}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -650,10 +813,18 @@ const Appbody = () => {
         </Grid>
       </section>
       <Steps
-        enabled={id === "1"}
+        onComplete={() => {
+          setStepEnable(false);
+        }}
+        enabled={stepEnable && id === "1"}
         steps={steps}
         initialStep={0}
-        onExit={onExit}
+        onExit={() => {
+          setStepEnable(false);
+        }}
+        // onStart={() => {
+        //   setStepEnable(false);
+        // }}
         options={{
           nextLabel: "下一步",
           prevLabel: "上一步",

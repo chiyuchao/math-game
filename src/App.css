@@ -37,13 +37,17 @@
   }
 }
 
-
 /* custom */
-body{
-  background: rgb(116,109,223);
-  background: linear-gradient(180deg, rgba(116,109,223,1) 0%, rgba(130,122,247,1) 34%, rgba(125,224,238,1) 73%, rgba(144,230,243,1) 100%);
+body {
+  background: rgb(116, 109, 223);
+  background: linear-gradient(
+    180deg,
+    rgba(116, 109, 223, 1) 0%,
+    rgba(130, 122, 247, 1) 34%,
+    rgba(125, 224, 238, 1) 73%,
+    rgba(144, 230, 243, 1) 100%
+  );
 }
-
 
 .hexagon {
   width: 50px;
@@ -55,7 +59,18 @@ body{
   background-repeat: no-repeat;
 }
 
-.hexagonIpuntLeft1{
+.instantFeedback {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  padding-top: 0.3em;
+  background-image: url("./Assets/hex.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: black;
+}
+
+.hexagonIpuntLeft1 {
   width: 47.2px;
   height: 40.2px;
   text-align: center;
@@ -65,7 +80,7 @@ body{
   line-height: 2.3em !important;
   color: white !important;
 }
-.hexagonIpuntRight1{
+.hexagonIpuntRight1 {
   width: 84.2px;
   height: 40.2px;
   text-align: center;
@@ -74,11 +89,11 @@ body{
   background-repeat: no-repeat;
 }
 
-.hexagonIpuntRight1 input{
-    padding-top: 0.4em;
+.hexagonIpuntRight1 input {
+  padding-top: 0.4em;
 }
 
-.hexagonIpuntLeft2{
+.hexagonIpuntLeft2 {
   width: 47.2px;
   height: 40.2px;
   text-align: center;
@@ -88,7 +103,7 @@ body{
   line-height: 2.3em !important;
   color: white !important;
 }
-.hexagonIpuntRight2{
+.hexagonIpuntRight2 {
   width: 84.2px;
   height: 40.2px;
   text-align: center;
@@ -97,11 +112,11 @@ body{
   background-repeat: no-repeat;
 }
 
-.hexagonIpuntRight2 input{
-    padding-top: 0.4em;
+.hexagonIpuntRight2 input {
+  padding-top: 0.4em;
 }
 
-.hexagonIpuntLeft3{
+.hexagonIpuntLeft3 {
   width: 47.2px;
   height: 40.2px;
   text-align: center;
@@ -111,7 +126,7 @@ body{
   line-height: 2.3em !important;
   color: white !important;
 }
-.hexagonIpuntRight3{
+.hexagonIpuntRight3 {
   width: 84.2px;
   height: 40.2px;
   text-align: center;
@@ -120,8 +135,8 @@ body{
   background-repeat: no-repeat;
 }
 
-.hexagonIpuntRight3 input{
-    padding-top: 0.4em;
+.hexagonIpuntRight3 input {
+  padding-top: 0.4em;
 }
 
 .hexagonBtn {
