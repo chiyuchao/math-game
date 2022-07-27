@@ -65,7 +65,7 @@ const Appbody = () => {
   // removeCookie(["hint"]);
   // removeCookie(["hintIconColor"]);
   // removeCookie(["count"]);
-  // removeCookie(["record"]);
+  // removeCookie(["submittedRecordTableRows"]);
 
   const [ansList, setAnsList] = useState(
     cookies.ansList ? cookies.ansList : Array(gd.length).fill(" ")
@@ -83,7 +83,7 @@ const Appbody = () => {
   const [keyIconColor, setKeyIconColor] = useState("Gray");
   const [hintIconColor, setHintIconColor] = useState(cookies.hintIconColor);
   const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState(
-    cookies.submittedRecordTableRowst ? cookies.submittedRecordTableRows : []
+    cookies.submittedRecordTableRows ? cookies.submittedRecordTableRows : []
   );
   const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
   const [levelcompletedModalOpen, setLevelcompletedModalOpen] = useState(false);
@@ -287,12 +287,13 @@ const Appbody = () => {
       if (count + 1 === gd.length) {
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
+        setLevelcompletedModalOpen(true);
+        removeCookie(["ansList"]);
         removeCookie(["hint"]);
         removeCookie(["hintIconColor"]);
-        setLevelcompletedModalOpen(true);
+        removeCookie(["count"]);
+        removeCookie(["submittedRecordTableRows"]);
 
-        removeCookie("count", { path: "/" });
-        // removeCookie("record", { path: "/" });
         return;
       }
     } else {
@@ -320,13 +321,20 @@ const Appbody = () => {
           createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
         ])
       );
+      setCookie(
+        "submittedRecordTableRows",
+        submittedRecordTableRows.concat([
+          createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
+        ]),
+        { path: "/" }
+      );
       no += 1;
     }
     // console.log(count);
     // console.log(submittedRecordTableRows);
   };
   const hintButtonOnclick = () => {
-    Rest.userUseHint(userid, id, "useHint");
+    Rest.userUseHint(userid, id, count);
     let data = [...ansList];
 
     data[count] = gd[count];
@@ -348,9 +356,12 @@ const Appbody = () => {
       setTimeout(() => {}, 1000);
       new Audio(GameClearanceSound).play();
       setLevelcompletedModalOpen(true);
-      removeCookie(["count"]);
+      removeCookie(["ansList"]);
       removeCookie(["hint"]);
       removeCookie(["hintIconColor"]);
+      removeCookie(["count"]);
+      removeCookie(["submittedRecordTableRows"]);
+
       return;
     }
   };
