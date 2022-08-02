@@ -1,7 +1,7 @@
 {
   "name": "math-game",
-  "version": "0.1.0",
-  "homepage": "https://chiyuchao.github.io/math-game",
+  "version": "0.1.1",
+  "homepage": "https://game.ntustmeg.tw/math_game/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.0",
