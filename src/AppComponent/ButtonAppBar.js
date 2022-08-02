@@ -36,6 +36,7 @@ const ButtonAppBar = () => {
       <AppBar position="sticky" sx={{ bgcolor: "#509993" }}>
         <Toolbar>
           <IconButton
+            id="menuButton"
             onClick={() => {
               setDrawerOpen(true);
             }}
