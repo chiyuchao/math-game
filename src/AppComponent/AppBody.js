@@ -47,7 +47,7 @@ const submittedRecord = new Set();
 const Appbody = () => {
   const { id } = useParams();
   const { userid } = useParams();
-
+  console.log(userid);
   const levelCreated = questionBase.data.length;
   const level = questionBase.data.find((level) => level.id === id);
   const { difficulty, question } = level;
