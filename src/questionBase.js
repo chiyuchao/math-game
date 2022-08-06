@@ -1,4 +1,5 @@
 export const data = [
+  { id: "0", difficulty: "level 0", question: ["A", "+", 2, "B"] },
   { id: "1", difficulty: "level 1", question: ["A", "-", 4, "B"] },
   { id: "2", difficulty: "level 1", question: [3, "A", "-", "B"] },
   { id: "3", difficulty: "level 1", question: [2, "A", "+", 5, "B"] },
