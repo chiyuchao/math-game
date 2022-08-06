@@ -21,7 +21,7 @@ function LevelSelect() {
           size="big"
           sx={{ borderColor: "#509993", color: "#57555E", mt: 5 }}
           href={`#/level-select/${cookies.level ? cookies.level : 1}/${
-            cookies.userID ? cookies.userID : unique_id
+            cookies.userId ? cookies.userId : unique_id
           }`}
           variant="outlined"
           startIcon={<LocalFloristIcon sx={{ color: "#FF7070" }} />}
