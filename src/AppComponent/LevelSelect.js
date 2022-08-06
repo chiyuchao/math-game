@@ -5,8 +5,10 @@ import questionBase from "../questionBase";
 import LocalFloristIcon from "@mui/icons-material/LocalFlorist";
 import { Box } from "@mui/system";
 import { v4 as uuid } from "uuid";
+import { Cookies, useCookies } from "react-cookie";
 
 function LevelSelect() {
+  const [cookies, setCookie, removeCookie] = useCookies(["level"], ["userId"]);
   console.log(questionBase);
 
   const unique_id = uuid();
@@ -18,7 +20,9 @@ function LevelSelect() {
           align="center"
           size="big"
           sx={{ borderColor: "#509993", color: "#57555E", mt: 5 }}
-          href={`#/level-select/1/${unique_id}`}
+          href={`#/level-select/${cookies.level ? cookies.level : 1}/${
+            cookies.userID ? cookies.userID : unique_id
+          }`}
           variant="outlined"
           startIcon={<LocalFloristIcon sx={{ color: "#FF7070" }} />}
         >

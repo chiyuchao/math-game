@@ -34,7 +34,7 @@ import GameClearanceSound from "../Assets/gameClearanceSound.wav";
 import { Link, animateScroll as scroll } from "react-scroll";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import Paper from "@mui/material/Paper";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import questionBase from "../questionBase";
 import "intro.js/introjs.css";
 import { Steps, Hints } from "intro.js-react";
@@ -53,26 +53,8 @@ const Appbody = () => {
   const { difficulty, question } = level;
   const gd = question;
 
-  const [cookies, setCookie, removeCookie] = useCookies(
-    ["ansList"],
-    ["count"],
-    ["submittedRecordTableRows"],
-    ["hint"],
-    ["hintIconColor"]
-  );
-
-  // removeCookie(["ansList"]);
-  // removeCookie(["hint"]);
-  // removeCookie(["hintIconColor"]);
-  // removeCookie(["count"]);
-  // removeCookie(["submittedRecordTableRows"]);
-
-  const [ansList, setAnsList] = useState(
-    cookies.ansList ? cookies.ansList : Array(gd.length).fill(" ")
-  );
-  const [count, setCount] = useState(
-    cookies.count ? parseInt(cookies.count) + 1 : 0
-  );
+  const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
+  const [count, setCount] = useState(0);
   const [inputIndex, setInputIndex] = useState("");
   const [inputA, setInputA] = useState("");
   const [inputB, setInputB] = useState("");
@@ -81,10 +63,8 @@ const Appbody = () => {
   const [textfieldColorB, setTextfieldColorB] = useState("");
   const [textfieldColorC, setTextfieldColorC] = useState("");
   const [keyIconColor, setKeyIconColor] = useState("Gray");
-  const [hintIconColor, setHintIconColor] = useState(cookies.hintIconColor);
-  const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState(
-    cookies.submittedRecordTableRows ? cookies.submittedRecordTableRows : []
-  );
+  const [hintIconColor, setHintIconColor] = useState("Gray");
+  const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState([]);
   const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
   const [levelcompletedModalOpen, setLevelcompletedModalOpen] = useState(false);
   const [stepEnable, setStepEnable] = useState(true);
@@ -102,11 +82,26 @@ const Appbody = () => {
   const handleduplicateSnackbarClose = () => {
     setduplicateSnackbarOpen(false);
   };
-  const [hintButtondisabled, sethintButtondisabled] = useState(cookies.hint);
+  const [hintButtondisabled, sethintButtondisabled] = useState(false);
 
   const [hintDialogOpen, setHintDialogOpen] = useState(false);
 
-  console.log(count);
+  const [cookies, setCookie, removeCookie] = useCookies(["level"], ["userId"]);
+
+  setCookie("level", id, { path: "/" });
+  setCookie("userId", userid, { path: "/" });
+
+  // removeCookie(["userId"]);
+  // removeCookie(["level"]);
+
+  // window.addEventListener("beforeunload", function(e) {
+  //   e.preventDefault();
+  //   e.returnValue = "";
+  // });
+
+  // window.addEventListener("popstate", function(event) {
+  //   alert("test");
+  // });
   const steps = [
     {
       title: "Guess My Rule",
@@ -275,32 +270,24 @@ const Appbody = () => {
     }
 
     if (Calculator.calculatorMethod(gd, inputA, inputB) === parseInt(inputC)) {
-      Rest.userSubmit(userid, id, currentSubmittedAnswer, "correct");
+      Rest.userSubmit(userid, id, currentSubmittedAnswer, "correct", count);
       submittedRecord.add(currentSubmittedAnswer);
       submittedRecordShow.add(currentSubmittedAnswer + ",正確");
+      console.log(typeof count);
       data[count] = gd[count];
       setCount(count + 1);
       setAnsList(data);
       setKeyIconColor("Gold");
-      setCookie("count", parseInt(count), { path: "/" });
-      let cookies = [...ansList];
-      cookies[count + 1] = gd[count + 1];
-
-      setCookie("ansList", data, { path: "/" });
 
       new Audio(CorrectSound).play();
       // console.log(count);
       // console.log(gd.length);
 
       if (count + 1 === gd.length) {
+        setCookie("level", parseInt(id) + 1, { path: "/" });
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
         setLevelcompletedModalOpen(true);
-        removeCookie(["ansList"]);
-        removeCookie(["hint"]);
-        removeCookie(["hintIconColor"]);
-        removeCookie(["count"]);
-        removeCookie(["submittedRecordTableRows"]);
 
         return;
       }
@@ -310,7 +297,7 @@ const Appbody = () => {
       submittedRecord.add(currentSubmittedAnswer);
       //console.log(submittedRecord);
 
-      Rest.userSubmit(userid, id, currentSubmittedAnswer, "incorrect");
+      Rest.userSubmit(userid, id, currentSubmittedAnswer, "incorrect", count);
       submittedRecordShow.add(
         currentSubmittedAnswer + ",錯誤 " + " C = " + correctAnswer
       );
@@ -329,46 +316,31 @@ const Appbody = () => {
           createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
         ])
       );
-      setCookie(
-        "submittedRecordTableRows",
-        submittedRecordTableRows.concat([
-          createSubmittedRecordTable(no, item[0], item[1], item[2], item[3]),
-        ]),
-        { path: "/" }
-      );
+
       no += 1;
     }
     // console.log(count);
     // console.log(submittedRecordTableRows);
   };
   const hintButtonOnclick = () => {
-    Rest.userUseHint(userid, id, count);
+    Rest.userUseHint(userid, id, "userHint", count);
     let data = [...ansList];
 
     data[count] = gd[count];
     setCount(count + 1);
     setAnsList(data);
-    let cookies = [...ansList];
-    cookies[count + 1] = gd[count + 1];
 
-    setCookie("ansList", data, { path: "/" });
     sethintButtondisabled(true);
     new Audio(CorrectSound).play();
     setHintDialogOpen(false);
     setHintIconColor("yellow");
-    setCookie("hint", true, { path: "/" });
-    setCookie("hintIconColor", "yellow", { path: "/" });
-    setCookie("count", parseInt(count), { path: "/" });
+
     console.log("使用提示");
     if (count + 1 === gd.length) {
       setTimeout(() => {}, 1000);
       new Audio(GameClearanceSound).play();
+      setCookie("level", parseInt(id) + 1, { path: "/" });
       setLevelcompletedModalOpen(true);
-      removeCookie(["ansList"]);
-      removeCookie(["hint"]);
-      removeCookie(["hintIconColor"]);
-      removeCookie(["count"]);
-      removeCookie(["submittedRecordTableRows"]);
 
       return;
     }
