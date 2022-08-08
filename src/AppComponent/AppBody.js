@@ -48,7 +48,7 @@ const Appbody = () => {
   const { id } = useParams();
   const { userid } = useParams();
   console.log(userid);
-  const levelCreated = questionBase.data.length;
+  const levelCreated = questionBase.data.length - 1;
   const level = questionBase.data.find((level) => level.id === id);
   const { difficulty, question } = level;
   const gd = question;
@@ -126,7 +126,7 @@ const Appbody = () => {
       title: "遊戲導覽",
       element: "#password",
       intro:
-        "這邊是我們要解的密碼串，C在等號的左邊，A和B則隱藏在等號的右邊，其他密碼格可能是常數或是括號",
+        "這邊是我們要解的密碼串，C在等號的左邊，A和B則隱藏在等號的右邊，其他密碼格可能是<b>常數、括號或是平方</b>",
     },
 
     {

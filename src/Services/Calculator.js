@@ -2,6 +2,79 @@ const Calculator = {
   calculatorMethod: function(gd, inputA, inputB) {
     const indexA = gd.indexOf("A");
     const indexB = gd.indexOf("B");
+
+    if (gd.includes("²")) {
+      const index2 = gd.indexOf("²");
+      //有平方
+      let a = gd.slice(0, indexA);
+      let b;
+      let constant;
+      if (indexA === 0) {
+        a = "1";
+      } else {
+        a = gd.slice(0, indexA).join("");
+      }
+
+      switch (index2 - 1) {
+        case indexA:
+          //A有平方
+          b = gd.slice(indexA + 2, indexB).join("");
+          if ((b === "+") | (b === "-")) {
+            b = b + "1";
+          }
+
+          if (gd.indexOf("²", index2 + 1) > 0) {
+            const indexB2 = gd.indexOf("²", index2 + 1);
+            console.log(indexB2);
+            if (indexB2 + 1 === gd.length) {
+              constant = "0";
+            } else {
+              constant = gd.slice(indexB + 2, gd.length).join("");
+            }
+            const answer =
+              parseInt(a) * parseInt(inputA) ** 2 +
+              parseInt(b) * parseInt(inputB) ** 2 +
+              parseInt(constant);
+            console.log(parseInt(a), parseInt(b), parseInt(constant), answer);
+            return answer;
+          } else {
+            if (indexB + 1 === gd.length) {
+              constant = "0";
+            } else {
+              constant = gd.slice(indexB + 1, gd.length).join("");
+            }
+            const answer =
+              parseInt(a) * parseInt(inputA) ** 2 +
+              parseInt(b) * parseInt(inputB) +
+              parseInt(constant);
+            console.log(parseInt(a), parseInt(b), parseInt(constant), answer);
+            return answer;
+          }
+
+          break;
+        case indexB:
+          //b有平方
+          b = gd.slice(indexA + 1, indexB).join("");
+          if ((b === "+") | (b === "-")) {
+            b = b + "1";
+          }
+          if (indexB + 2 === gd.length) {
+            constant = "0";
+          } else {
+            constant = gd.slice(indexB + 2, gd.length).join("");
+          }
+          const answerB =
+            parseInt(a) * parseInt(inputA) +
+            parseInt(b) * parseInt(inputB) ** 2 +
+            parseInt(constant);
+
+          console.log(a, b, constant);
+
+          return answerB;
+          break;
+      }
+    }
+
     if (gd.includes("(")) {
       if (gd.indexOf("(") === 1) {
         // 目前有括號的題目，每個係數只能是一位數
@@ -25,14 +98,14 @@ const Calculator = {
         } else {
           constant = gd.slice(indexB + 2, gd.length).join("");
         }
-        const answer =
+        const answerA =
           parseInt(a) * parseInt(inputA) +
           parseInt(b) * parseInt(inputB) +
           parseInt(constant);
         console.log(a);
         console.log(b);
         console.log(constant);
-        return answer;
+        return answerA;
       } else {
         const coefficient = gd.slice(indexA + 1, gd.indexOf("(")).join("");
         let a;
@@ -70,6 +143,7 @@ const Calculator = {
       let a;
       let b = gd.slice(indexA + 1, indexB).join("");
       let constant;
+
       if (indexA === 0) {
         a = "1";
       } else {
