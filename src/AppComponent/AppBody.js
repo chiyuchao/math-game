@@ -144,11 +144,11 @@ const Appbody = () => {
       element: "#submittedRecord",
       intro: "按鈕可以下滑頁面看到你之前提交過的答案組合📜",
     },
-    {
-      title: "遊戲導覽",
-      element: "#hintButton",
-      intro: "如果需要一點提示，可以點選這邊，但每關只能使用一次喔!",
-    },
+    // {
+    //   title: "遊戲導覽",
+    //   element: "#hintButton",
+    //   intro: "如果需要一點提示，可以點選這邊，但每關只能使用一次喔!",
+    // },
     {
       title: "遊戲導覽",
       element: "#menuButton",
@@ -568,7 +568,8 @@ const Appbody = () => {
         >
           <Button
             className="submitBtn"
-            sx={{ color: "#523D42", ml: 5.5 }}
+            // sx={{ color: "#523D42", ml: 5.5 }}
+            sx={{ color: "#523D42" }}
             onClick={submitButtonOnclick}
           >
             Submit
@@ -600,7 +601,7 @@ const Appbody = () => {
               </Button>
             </DialogActions>
           </Dialog>
-          <IconButton
+          {/* <IconButton
             id="hintButton"
             disabled={hintButtondisabled}
             size="large"
@@ -616,7 +617,7 @@ const Appbody = () => {
                 }}
               />
             </Tooltip>
-          </IconButton>
+          </IconButton> */}
         </Grid>
 
         <Grid
