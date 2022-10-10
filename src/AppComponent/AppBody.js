@@ -41,19 +41,24 @@ import { Steps, Hints } from "intro.js-react";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Cookies, useCookies } from "react-cookie";
+import { width } from "@mui/system";
 
 const submittedRecordShow = new Set();
 const submittedRecord = new Set();
+
+let answerMap = new Map();
+let indexValue = -1;
 const Appbody = () => {
   const { id } = useParams();
   const { userid } = useParams();
   console.log(userid);
   const levelCreated = questionBase.data.length - 1;
   const level = questionBase.data.find((level) => level.id === id);
+
   const { difficulty, question } = level;
   const gd = question;
-
   const [ansList, setAnsList] = useState(Array(gd.length).fill(" "));
+
   const [count, setCount] = useState(0);
   const [inputIndex, setInputIndex] = useState("");
   const [inputA, setInputA] = useState("");
@@ -66,7 +71,11 @@ const Appbody = () => {
   const [hintIconColor, setHintIconColor] = useState("Gray");
   const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState([]);
   const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
-  const [levelcompletedModalOpen, setLevelcompletedModalOpen] = useState(false);
+  const [levelcompletedOpen, setLevelcompletedOpen] = useState(false);
+  const [levelcompletedwithHintOpen, setLevelcompletedwithHintOpen] = useState(
+    false
+  );
+  const [selectIndexModalOpen, setSelectIndexModalOpen] = useState(false);
   const [stepEnable, setStepEnable] = useState(true);
   const handleClickOpen = () => {
     setnewLevelDialogueOpen(true);
@@ -85,23 +94,45 @@ const Appbody = () => {
   const [hintButtondisabled, sethintButtondisabled] = useState(false);
 
   const [hintDialogOpen, setHintDialogOpen] = useState(false);
+  const [hintButtonCount, setHintButtonCount] = useState(0);
+  const [hintABCount, setHintABCount] = useState(0);
+  const [hintAnyCount, setHintAnyCount] = useState(0);
+  const [hintOneSetCount, setHintOneSetCount] = useState(0);
+  const [hintABDisabled, setHintABDisabled] = useState(false);
 
-  const [cookies, setCookie, removeCookie] = useCookies(["level"], ["userId"]);
+  const [cookies, setCookie, removeCookie] = useCookies(
+    ["level"],
+    ["userId"],
+    ["hintAB"],
+    ["hintAny"],
+    ["hintOneSet"]
+  );
+  useEffect(() => {
+    setCookie("level", id, { path: "/" });
+    setCookie("userId", userid, { path: "/" });
+    if (cookies.hintAB === undefined) {
+      setCookie("hintAB", 3, { path: "/" });
+      setHintABCount(3);
+      console.log(cookies.hintAB);
+    } else {
+      setHintABCount(cookies.hintAB);
+      console.log(cookies.hintAB);
+    }
+    if (cookies.hintAny === undefined) {
+      setCookie("hintAny", 3, { path: "/" });
+    }
+    if (!cookies.hintAny) {
+      setCookie("hintOneSet", 3, { path: "/" });
+    }
+    setHintAnyCount(cookies.hintAny);
+    setHintOneSetCount(cookies.hintOneSet);
+    answerMap = new Map(
+      gd.map((value, index) => {
+        return [index, value];
+      })
+    );
+  }, []);
 
-  setCookie("level", id, { path: "/" });
-  setCookie("userId", userid, { path: "/" });
-
-  // removeCookie(["userId"]);
-  // removeCookie(["level"]);
-
-  // window.addEventListener("beforeunload", function(e) {
-  //   e.preventDefault();
-  //   e.returnValue = "";
-  // });
-
-  // window.addEventListener("popstate", function(event) {
-  //   alert("test");
-  // });
   const steps = [
     {
       title: "Guess My Rule",
@@ -144,11 +175,11 @@ const Appbody = () => {
       element: "#submittedRecord",
       intro: "按鈕可以下滑頁面看到你之前提交過的答案組合📜",
     },
-    // {
-    //   title: "遊戲導覽",
-    //   element: "#hintButton",
-    //   intro: "如果需要一點提示，可以點選這邊，但每關只能使用一次喔!",
-    // },
+    {
+      title: "遊戲導覽",
+      element: "#hintButton",
+      intro: "如果需要一點提示，可以點選這邊，但使用的次數有限制喔",
+    },
     {
       title: "遊戲導覽",
       element: "#menuButton",
@@ -250,6 +281,8 @@ const Appbody = () => {
   };
 
   const submitButtonOnclick = () => {
+    console.log(submittedRecord);
+    console.log(submittedRecordTableRows);
     if (
       inputA.length === 0 ||
       inputA === "-" ||
@@ -270,24 +303,32 @@ const Appbody = () => {
     }
 
     if (Calculator.calculatorMethod(gd, inputA, inputB) === parseInt(inputC)) {
-      Rest.userSubmit(userid, id, currentSubmittedAnswer, "correct", count);
+      console.log(answerMap);
+      Rest.userSubmit(
+        userid,
+        id,
+        currentSubmittedAnswer,
+        "correct",
+        answerMap.keys().next().value
+      );
       submittedRecord.add(currentSubmittedAnswer);
       submittedRecordShow.add(currentSubmittedAnswer + ",正確");
-      console.log(typeof count);
-      data[count] = gd[count];
+      //data[count] = gd[count];
+      data[answerMap.keys().next().value] = gd[answerMap.keys().next().value];
       setCount(count + 1);
       setAnsList(data);
       setKeyIconColor("Gold");
+      indexValue = answerMap.keys().next().value;
+      answerMap.delete(answerMap.keys().next().value);
 
+      console.log(answerMap);
       new Audio(CorrectSound).play();
-      // console.log(count);
-      // console.log(gd.length);
 
-      if (count + 1 === gd.length) {
+      if (answerMap.size === 0) {
         setCookie("level", parseInt(id) + 1, { path: "/" });
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
-        setLevelcompletedModalOpen(true);
+        setLevelcompletedOpen(true);
 
         return;
       }
@@ -297,7 +338,13 @@ const Appbody = () => {
       submittedRecord.add(currentSubmittedAnswer);
       //console.log(submittedRecord);
 
-      Rest.userSubmit(userid, id, currentSubmittedAnswer, "incorrect", count);
+      Rest.userSubmit(
+        userid,
+        id,
+        currentSubmittedAnswer,
+        "incorrect",
+        answerMap.keys().next().value
+      );
       submittedRecordShow.add(
         currentSubmittedAnswer + ",錯誤 " + " C = " + correctAnswer
       );
@@ -322,28 +369,110 @@ const Appbody = () => {
     // console.log(count);
     // console.log(submittedRecordTableRows);
   };
-  const hintButtonOnclick = () => {
-    Rest.userUseHint(userid, id, "userHint", count);
+  const openABButtonOnclick = () => {
+    const count = hintABCount - 1;
+    setHintABCount(count);
+    setCookie("hintAB", count, { path: "/" });
+    Rest.userUseHint(userid, id, "openABHint", "A&B");
+    console.log(hintABCount);
     let data = [...ansList];
 
-    data[count] = gd[count];
+    //data[count] = gd[count];
+    let _keyA = -1;
+    let _keyB = -1;
+
+    answerMap.forEach((value, key) => {
+      if (value === "A") _keyA = key;
+      if (value === "B") _keyB = key;
+    });
+    console.log("keyA" + _keyA + "keyB" + _keyB);
+    data[_keyA] = gd[_keyA];
+    data[_keyB] = gd[_keyB];
+    answerMap.delete(_keyA);
+    answerMap.delete(_keyB);
+    console.log(submittedRecordTableRows);
+
     setCount(count + 1);
     setAnsList(data);
 
-    sethintButtondisabled(true);
+    //sethintButtondisabled(true);
     new Audio(CorrectSound).play();
     setHintDialogOpen(false);
     setHintIconColor("yellow");
-
-    console.log("使用提示");
-    if (count + 1 === gd.length) {
+    console.log(answerMap.keys().next().value);
+    console.log("使用提示1");
+    if (answerMap.size === 0) {
       setTimeout(() => {}, 1000);
       new Audio(GameClearanceSound).play();
       setCookie("level", parseInt(id) + 1, { path: "/" });
-      setLevelcompletedModalOpen(true);
+      setLevelcompletedwithHintOpen(true);
 
       return;
     }
+    setHintABDisabled(true);
+  };
+
+  const openAnyButtonOnclick = (key) => {
+    const count = hintAnyCount - 1;
+    setHintAnyCount(count);
+    setCookie("hintAny", count, { path: "/" });
+    let data = [...ansList];
+    data[key] = gd[key];
+    setAnsList(data);
+    answerMap.delete(key);
+    Rest.userUseHint(userid, id, "openAnyHint", key);
+    new Audio(CorrectSound).play();
+    setSelectIndexModalOpen(false);
+    setHintDialogOpen(false);
+    setHintIconColor("yellow");
+    if (answerMap.size === 0) {
+      setTimeout(() => {}, 1000);
+      new Audio(GameClearanceSound).play();
+      setCookie("level", parseInt(id) + 1, { path: "/" });
+      setLevelcompletedwithHintOpen(true);
+
+      return;
+    }
+  };
+
+  const oneSetButtonOnclick = () => {
+    const count = hintOneSetCount - 1;
+    setHintOneSetCount(count);
+    setCookie("hintOneSet", count, { path: "/" });
+    Rest.userUseHint(userid, id, "oneSetHint", "-");
+    setHintButtonCount(hintButtonCount + 1);
+    setHintDialogOpen(false);
+    setHintIconColor("yellow");
+    let randomA = Math.floor(Math.random() * 10);
+    let randomB = Math.floor(Math.random() * 10);
+    while (
+      submittedRecord.has(
+        randomA,
+        randomB,
+        Calculator.calculatorMethod(gd, randomA, randomB)
+      )
+    ) {
+      randomA = Math.floor(Math.random() * 10);
+      randomB = Math.floor(Math.random() * 10);
+    }
+    submittedRecord.add(
+      randomA +
+        "," +
+        randomB +
+        "," +
+        Calculator.calculatorMethod(gd, randomA, randomB)
+    );
+    setSubmittedRecordTableRows(
+      submittedRecordTableRows.concat([
+        createSubmittedRecordTable(
+          "提示",
+          randomA,
+          randomB,
+          Calculator.calculatorMethod(gd, randomA, randomB),
+          "-"
+        ),
+      ])
+    );
   };
 
   const createSubmittedRecordTable = (no, A, B, C, results) => {
@@ -386,10 +515,10 @@ const Appbody = () => {
         </DialogActions>
       </Dialog>
       <Dialog
-        open={levelcompletedModalOpen}
+        open={levelcompletedOpen}
         keepMounted
         onClose={() => {
-          setLevelcompletedModalOpen(false);
+          setLevelcompletedOpen(false);
           NextLevelButton();
         }}
         aria-describedby="alert-dialog-slide-description"
@@ -397,7 +526,9 @@ const Appbody = () => {
         <DialogTitle align="center">{"🎉恭喜過關🎉"}</DialogTitle>
         <DialogContent align="center">
           <DialogContentText id="alert-dialog-slide-description">
-            總共嘗試了 <b>{submittedRecordTableRows.length + 1}</b> 次<br></br>
+            總共嘗試了{" "}
+            <b>{submittedRecordTableRows.length + 1 - hintButtonCount}</b> 次
+            <br></br>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -428,6 +559,70 @@ const Appbody = () => {
               <ArrowForwardIosIcon />
             </Button>
           </Grid>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={levelcompletedwithHintOpen}
+        keepMounted
+        onClose={() => {
+          setLevelcompletedOpen(false);
+          NextLevelButton();
+        }}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle align="center">{"🎉恭喜過關🎉"}</DialogTitle>
+        <DialogContent align="center">
+          <DialogContentText id="alert-dialog-slide-description">
+            總共嘗試了{" "}
+            <b>{submittedRecordTableRows.length - hintButtonCount}</b> 次
+            <br></br>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Grid container alignItems="center" justifyContent="center">
+            <Button
+              sx={{ alignContent: "center", width: "150px" }}
+              variant="outlined"
+              onClick={NextLevelButton}
+            >
+              下一關
+              <ArrowForwardIosIcon />
+            </Button>
+          </Grid>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={selectIndexModalOpen}>
+        <DialogTitle>{"你想打開第幾格?"}</DialogTitle>
+        <DialogActions>
+          <DialogActions>
+            <Grid
+              container
+              direction="column"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              {Array.from(answerMap.keys()).map((key) => {
+                return (
+                  <Button
+                    sx={{ mb: 1, width: "200px" }}
+                    onClick={() => openAnyButtonOnclick(key)}
+                    variant="outlined"
+                    autoFocus
+                  >
+                    {key + 1}
+                  </Button>
+                );
+              })}
+              <Button
+                sx={{ mb: 1, color: "gray" }}
+                onClick={() => {
+                  setSelectIndexModalOpen(false);
+                }}
+              >
+                取消
+              </Button>
+            </Grid>
+          </DialogActions>
         </DialogActions>
       </Dialog>
 
@@ -466,7 +661,7 @@ const Appbody = () => {
           {ansList.map((value, index) => {
             return (
               <Typography
-                className={index === count - 1 ? "instantFeedback" : "hexagon"}
+                className={index === indexValue ? "instantFeedback" : "hexagon"}
                 variant="h5"
               >
                 {value}
@@ -568,40 +763,81 @@ const Appbody = () => {
         >
           <Button
             className="submitBtn"
-            // sx={{ color: "#523D42", ml: 5.5 }}
-            sx={{ color: "#523D42" }}
+            sx={{ color: "#523D42", ml: 5.5 }}
+            //sx={{ color: "#523D42" }}
             onClick={submitButtonOnclick}
           >
             Submit
           </Button>
           <Dialog
+            onClick={() => {
+              if (hintABCount <= 1) {
+                setHintABDisabled(true);
+              }
+            }}
             open={hintDialogOpen}
             onClose={() => {
               setHintDialogOpen(false);
             }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            PaperProps={{ sx: { width: "280px" } }}
           >
-            <DialogTitle id="alert-dialog-title">{"使用提示"}</DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                要使用提示打開一格密碼嗎 ? 一關只能使用一次喔!
-              </DialogContentText>
-            </DialogContent>
+            <DialogTitle id="alert-dialog-title" align="center">
+              {"想使用哪一種提示?"}
+            </DialogTitle>
+
             <DialogActions>
-              <Button
-                onClick={() => {
-                  setHintDialogOpen(false);
-                }}
+              <Grid
+                container
+                direction="column"
+                justifyContent="flex-start"
+                alignItems="center"
               >
-                再想想
-              </Button>
-              <Button onClick={hintButtonOnclick} autoFocus>
-                好
-              </Button>
+                <Button
+                  onClick={openABButtonOnclick}
+                  disabled={hintABDisabled}
+                  sx={{ mb: 1, width: "200px" }}
+                  variant="outlined"
+                  autoFocus
+                >
+                  揭曉密碼中A跟B的位置 <br />
+                  (可用{hintABCount}次)
+                </Button>
+                <Button
+                  sx={{ mb: 1, width: "200px" }}
+                  onClick={oneSetButtonOnclick}
+                  disabled={hintOneSetCount <= 0}
+                  variant="outlined"
+                  autoFocus
+                >
+                  提供一組正解
+                  <br /> (可用{hintOneSetCount}次)
+                </Button>
+                <Button
+                  sx={{ mb: 1, width: "200px" }}
+                  onClick={() => {
+                    setSelectIndexModalOpen(true);
+                  }}
+                  disabled={hintAnyCount <= 0}
+                  variant="outlined"
+                  autoFocus
+                >
+                  打開其中一格
+                  <br /> (可用{hintAnyCount}次)
+                </Button>
+                <Button
+                  sx={{ mb: 1, color: "gray" }}
+                  onClick={() => {
+                    setHintDialogOpen(false);
+                  }}
+                >
+                  先不用提示
+                </Button>
+              </Grid>
             </DialogActions>
           </Dialog>
-          {/* <IconButton
+          <IconButton
             id="hintButton"
             disabled={hintButtondisabled}
             size="large"
@@ -617,7 +853,7 @@ const Appbody = () => {
                 }}
               />
             </Tooltip>
-          </IconButton> */}
+          </IconButton>
         </Grid>
 
         <Grid
