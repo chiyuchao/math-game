@@ -117,15 +117,24 @@ const Appbody = () => {
     } else {
       setHintABCount(cookies.hintAB);
       console.log(cookies.hintAB);
+      if (cookies.hintAB <= 0) {
+        setHintABDisabled(true);
+      }
     }
     if (cookies.hintAny === undefined) {
       setCookie("hintAny", 3, { path: "/" });
+      setHintAnyCount(3);
+    } else {
+      setHintAnyCount(cookies.hintAny);
     }
-    if (!cookies.hintAny) {
+    if (cookies.hintOneSet === undefined) {
       setCookie("hintOneSet", 3, { path: "/" });
+      setHintOneSetCount(3);
+    } else {
+      setHintOneSetCount(cookies.hintOneSet);
     }
-    setHintAnyCount(cookies.hintAny);
-    setHintOneSetCount(cookies.hintOneSet);
+    // setHintAnyCount(cookies.hintAny);
+    // setHintOneSetCount(cookies.hintOneSet);
     answerMap = new Map(
       gd.map((value, index) => {
         return [index, value];
