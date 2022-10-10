@@ -770,11 +770,6 @@ const Appbody = () => {
             Submit
           </Button>
           <Dialog
-            onClick={() => {
-              if (hintABCount <= 1) {
-                setHintABDisabled(true);
-              }
-            }}
             open={hintDialogOpen}
             onClose={() => {
               setHintDialogOpen(false);
