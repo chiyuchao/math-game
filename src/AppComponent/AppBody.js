@@ -128,8 +128,8 @@ const Appbody = () => {
       setHintAnyCount(cookies.hintAny);
     }
     if (cookies.hintOneSet === undefined) {
-      setCookie("hintOneSet", 3, { path: "/" });
-      setHintOneSetCount(3);
+      setCookie("hintOneSet", 5, { path: "/" });
+      setHintOneSetCount(5);
     } else {
       setHintOneSetCount(cookies.hintOneSet);
     }
