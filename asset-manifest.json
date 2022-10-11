@@ -13,9 +13,9 @@
   "static/media/gameClearanceSound.wav": "/math_game/static/media/gameClearanceSound.58db2c55.wav",
   "static/media/App.css": "/math_game/static/media/record.77b27396.png",
   "static/media/failureSound.wav": "/math_game/static/media/failureSound.1472b5cf.wav",
-  "static/css/2.79613da8.chunk.css.map": "/math_game/static/css/2.79613da8.chunk.css.map",
   "static/css/main.530d62a4.chunk.css.map": "/math_game/static/css/main.530d62a4.chunk.css.map",
+  "static/css/2.79613da8.chunk.css.map": "/math_game/static/css/2.79613da8.chunk.css.map",
   "index.html": "/math_game/index.html",
-  "precache-manifest.398d72242157e35dc47478c73dc9a1d7.js": "/math_game/precache-manifest.398d72242157e35dc47478c73dc9a1d7.js",
+  "precache-manifest.ac0dfeafc64b4888904bb9f04e769863.js": "/math_game/precache-manifest.ac0dfeafc64b4888904bb9f04e769863.js",
   "service-worker.js": "/math_game/service-worker.js"
 }
