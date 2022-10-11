@@ -32,16 +32,16 @@ self.__precacheManifest = [
     "url": "/math_game/static/media/gameClearanceSound.58db2c55.wav"
   },
   {
-    "revision": "d2b8cf742633858016431c3f2a419bfe",
-    "url": "/math_game/static/media/inputLP.d2b8cf74.png"
-  },
-  {
     "revision": "844d24ebac76599c29a1616897136870",
     "url": "/math_game/static/media/hex.844d24eb.png"
   },
   {
     "revision": "649429fe6874bde3998ea0af4e6c5e9f",
     "url": "/math_game/static/media/hex2.649429fe.png"
+  },
+  {
+    "revision": "d2b8cf742633858016431c3f2a419bfe",
+    "url": "/math_game/static/media/inputLP.d2b8cf74.png"
   },
   {
     "revision": "68c575172b75a2af7e2a330d460ac8c1",
