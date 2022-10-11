@@ -4,7 +4,7 @@ import ButtonAppBar from "./AppComponent/ButtonAppBar";
 import Appbody from "./AppComponent/AppBody";
 import LevelSelect from "./AppComponent/LevelSelect";
 import ErrorPage from "./AppComponent/ErrorPage";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { HashRouter } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
