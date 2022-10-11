@@ -68,7 +68,7 @@ const Appbody = () => {
   const [textfieldColorB, setTextfieldColorB] = useState("");
   const [textfieldColorC, setTextfieldColorC] = useState("");
   const [keyIconColor, setKeyIconColor] = useState("Gray");
-  const [hintIconColor, setHintIconColor] = useState("Gray");
+  // const [hintIconColor, setHintIconColor] = useState("Gray");
   const [submittedRecordTableRows, setSubmittedRecordTableRows] = useState([]);
   const [newLevelDialogueOpen, setnewLevelDialogueOpen] = useState(false);
   const [levelcompletedOpen, setLevelcompletedOpen] = useState(false);
@@ -187,7 +187,8 @@ const Appbody = () => {
     {
       title: "遊戲導覽",
       element: "#hintButton",
-      intro: "如果需要一點提示，可以點選這邊，但使用的次數有限制喔",
+      intro:
+        "如果需要一點提示，可以點選這邊，但整輪遊戲中可使用的次數有限制喔!",
     },
     {
       title: "遊戲導覽",
@@ -407,7 +408,7 @@ const Appbody = () => {
     //sethintButtondisabled(true);
     new Audio(CorrectSound).play();
     setHintDialogOpen(false);
-    setHintIconColor("yellow");
+    // setHintIconColor("yellow");
     console.log(answerMap.keys().next().value);
     console.log("使用提示1");
     if (answerMap.size === 0) {
@@ -433,7 +434,7 @@ const Appbody = () => {
     new Audio(CorrectSound).play();
     setSelectIndexModalOpen(false);
     setHintDialogOpen(false);
-    setHintIconColor("yellow");
+    // setHintIconColor("yellow");
     if (answerMap.size === 0) {
       setTimeout(() => {}, 1000);
       new Audio(GameClearanceSound).play();
@@ -451,7 +452,7 @@ const Appbody = () => {
     Rest.userUseHint(userid, id, "oneSetHint", 0);
     setHintButtonCount(hintButtonCount + 1);
     setHintDialogOpen(false);
-    setHintIconColor("yellow");
+    // setHintIconColor("yellow");
     let randomA = Math.floor(Math.random() * 10);
     let randomB = Math.floor(Math.random() * 10);
     while (
@@ -806,7 +807,9 @@ const Appbody = () => {
                   autoFocus
                 >
                   揭曉密碼中A跟B的位置 <br />
-                  (可用{hintABCount}次)
+                  (一關限用1次)
+                  <br />
+                  (整輪遊戲中剩餘:{hintABCount}次)
                 </Button>
                 <Button
                   sx={{ mb: 1, width: "200px" }}
@@ -816,7 +819,7 @@ const Appbody = () => {
                   autoFocus
                 >
                   提供一組正解
-                  <br /> (可用{hintOneSetCount}次)
+                  <br /> (整輪遊戲中剩餘:{hintOneSetCount}次)
                 </Button>
                 <Button
                   sx={{ mb: 1, width: "200px" }}
@@ -828,7 +831,7 @@ const Appbody = () => {
                   autoFocus
                 >
                   打開其中一格
-                  <br /> (可用{hintAnyCount}次)
+                  <br /> (整輪遊戲中剩餘:{hintAnyCount}次)
                 </Button>
                 <Button
                   sx={{ mb: 1, color: "gray" }}
@@ -843,17 +846,17 @@ const Appbody = () => {
           </Dialog>
           <IconButton
             id="hintButton"
-            disabled={hintButtondisabled}
+            // disabled={hintButtondisabled}
             size="large"
+            onClick={() => {
+              setHintDialogOpen(true);
+            }}
           >
             <Tooltip title="使用提示">
               <LightbulbIcon
                 sx={{
-                  color: hintIconColor,
+                  color: "yellow",
                   mb: 1,
-                }}
-                onClick={() => {
-                  setHintDialogOpen(true);
                 }}
               />
             </Tooltip>
