@@ -382,7 +382,7 @@ const Appbody = () => {
     const count = hintABCount - 1;
     setHintABCount(count);
     setCookie("hintAB", count, { path: "/" });
-    Rest.userUseHint(userid, id, "openABHint", "A&B");
+    Rest.userUseHint(userid, id, "openABHint", 0);
     console.log(hintABCount);
     let data = [...ansList];
 
@@ -448,7 +448,7 @@ const Appbody = () => {
     const count = hintOneSetCount - 1;
     setHintOneSetCount(count);
     setCookie("hintOneSet", count, { path: "/" });
-    Rest.userUseHint(userid, id, "oneSetHint", "-");
+    Rest.userUseHint(userid, id, "oneSetHint", 0);
     setHintButtonCount(hintButtonCount + 1);
     setHintDialogOpen(false);
     setHintIconColor("yellow");
