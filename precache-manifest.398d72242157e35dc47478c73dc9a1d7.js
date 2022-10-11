@@ -32,10 +32,6 @@ self.__precacheManifest = [
     "url": "/math_game/static/media/gameClearanceSound.58db2c55.wav"
   },
   {
-    "revision": "649429fe6874bde3998ea0af4e6c5e9f",
-    "url": "/math_game/static/media/hex2.649429fe.png"
-  },
-  {
     "revision": "d2b8cf742633858016431c3f2a419bfe",
     "url": "/math_game/static/media/inputLP.d2b8cf74.png"
   },
@@ -44,12 +40,16 @@ self.__precacheManifest = [
     "url": "/math_game/static/media/hex.844d24eb.png"
   },
   {
-    "revision": "77b273961ce5ff97a531f8a88795eba7",
-    "url": "/math_game/static/media/record.77b27396.png"
-  },
-  {
     "revision": "68c575172b75a2af7e2a330d460ac8c1",
     "url": "/math_game/static/media/submit.68c57517.png"
+  },
+  {
+    "revision": "649429fe6874bde3998ea0af4e6c5e9f",
+    "url": "/math_game/static/media/hex2.649429fe.png"
+  },
+  {
+    "revision": "77b273961ce5ff97a531f8a88795eba7",
+    "url": "/math_game/static/media/record.77b27396.png"
   },
   {
     "revision": "1472b5cf280bf1c291c544befc563c10",
