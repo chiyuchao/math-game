@@ -30,6 +30,7 @@ import Calculator from "../Services/Calculator";
 import Rest from "../Services/Rest";
 import CorrectSound from "../Assets/correctSound.wav";
 import FailureSound from "../Assets/failureSound.wav";
+import HintSound from "../Assets/hintSound.wav";
 import GameClearanceSound from "../Assets/gameClearanceSound.wav";
 import { Link, animateScroll as scroll } from "react-scroll";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -40,6 +41,7 @@ import "intro.js/introjs.css";
 import { Steps, Hints } from "intro.js-react";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { positions } from "@mui/system";
 import { Cookies, useCookies } from "react-cookie";
 import { width } from "@mui/system";
 
@@ -406,7 +408,7 @@ const Appbody = () => {
     setAnsList(data);
 
     //sethintButtondisabled(true);
-    new Audio(CorrectSound).play();
+    new Audio(HintSound).play();
     setHintDialogOpen(false);
     // setHintIconColor("yellow");
     console.log(answerMap.keys().next().value);
@@ -431,7 +433,7 @@ const Appbody = () => {
     setAnsList(data);
     answerMap.delete(key);
     Rest.userUseHint(userid, id, "openAnyHint", key);
-    new Audio(CorrectSound).play();
+    new Audio(HintSound).play();
     setSelectIndexModalOpen(false);
     setHintDialogOpen(false);
     // setHintIconColor("yellow");
@@ -446,6 +448,7 @@ const Appbody = () => {
   };
 
   const oneSetButtonOnclick = () => {
+    new Audio(HintSound).play();
     const count = hintOneSetCount - 1;
     setHintOneSetCount(count);
     setCookie("hintOneSet", count, { path: "/" });
@@ -601,7 +604,7 @@ const Appbody = () => {
           </Grid>
         </DialogActions>
       </Dialog>
-      <Dialog open={selectIndexModalOpen}>
+      <Dialog open={selectIndexModalOpen} sx={{ mt: 8 }}>
         <DialogTitle>{"你想打開第幾格?"}</DialogTitle>
         <DialogActions>
           <DialogActions>
@@ -786,7 +789,7 @@ const Appbody = () => {
             }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
-            PaperProps={{ sx: { width: "280px" } }}
+            PaperProps={{ sx: { width: "280px", mt: 10 } }}
           >
             <DialogTitle id="alert-dialog-title" align="center">
               {"想使用哪一種提示?"}
@@ -824,6 +827,7 @@ const Appbody = () => {
                 <Button
                   sx={{ mb: 1, width: "200px" }}
                   onClick={() => {
+                    setHintDialogOpen(false);
                     setSelectIndexModalOpen(true);
                   }}
                   disabled={hintAnyCount <= 0}
