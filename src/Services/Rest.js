@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
+import { responsiveFontSizes } from "@mui/material";
 
 const Rest = {
   startLevel: (userid, id, result) => {
@@ -12,8 +13,7 @@ const Rest = {
     console.log(data);
     axios({
       url: url,
-      method: "POST",
-
+      method: "PUT",
       data: data,
     })
       .then((response) => {
@@ -65,5 +65,30 @@ const Rest = {
       .catch((error) => console.error("Error:", error))
       .then((response) => console.log("Success:", response));
   },
+
+  postLeaderBoard: (userId, userScore) => {
+    var url = "https://game.ntustmeg.tw/postMathGameLeaderBoard";
+    var data = {
+      userId: userId,
+      userScore: userScore,
+    };
+    console.log(data);
+    axios({
+      url: url,
+      method: "POST",
+      data: data,
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => console.error("Error:", error))
+      .then((response) => console.log("Success:", response));
+  },
+  getLeaderBoard: () => {
+    axios("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
+  },
 };
+
 export default Rest;

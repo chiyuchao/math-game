@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
+  Alert,
   DialogTitle,
   DialogContentText,
   DialogContent,
@@ -44,6 +45,8 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { positions } from "@mui/system";
 import { Cookies, useCookies } from "react-cookie";
 import { width } from "@mui/system";
+import axios from "axios";
+import { convertLength } from "@mui/material/styles/cssUtils";
 
 const submittedRecordShow = new Set();
 const submittedRecord = new Set();
@@ -53,7 +56,12 @@ let indexValue = -1;
 const Appbody = () => {
   const { id } = useParams();
   const { userid } = useParams();
-  console.log(userid);
+
+  const [existingData, setExistingData] = useState([]);
+  const [existingScore, setExistingScore] = useState(0);
+
+  console.log(existingScore);
+
   const levelCreated = questionBase.data.length - 1;
   const level = questionBase.data.find((level) => level.id === id);
 
@@ -66,6 +74,9 @@ const Appbody = () => {
   const [inputA, setInputA] = useState("");
   const [inputB, setInputB] = useState("");
   const [inputC, setInputC] = useState("");
+  const [leaderBoardScore, setLeaderBoardScore] = useState(100);
+
+  const [flaseAlert, setFalseAlertOpen] = useState(false);
   const [textfieldColorA, setTextfieldColorA] = useState("");
   const [textfieldColorB, setTextfieldColorB] = useState("");
   const [textfieldColorC, setTextfieldColorC] = useState("");
@@ -110,6 +121,22 @@ const Appbody = () => {
     ["hintOneSet"]
   );
   useEffect(() => {
+    const getLeaderBoard = async () => {
+      const data = await axios
+        .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+        .then((res) => {
+          return res.data;
+        })
+        .catch((err) => console.log(err));
+      setExistingData(data);
+      // if (data.find((data) => data.userId === userid)) {
+      //   setExistingScore(data.find((data) => data.userId === userid).userscore);
+      // }
+    };
+    getLeaderBoard();
+
+    //setExistingScore(existingData.find((data) => data.userId === userid));
+
     setCookie("level", id, { path: "/" });
     setCookie("userId", userid, { path: "/" });
     if (cookies.hintAB === undefined) {
@@ -135,6 +162,7 @@ const Appbody = () => {
     } else {
       setHintOneSetCount(cookies.hintOneSet);
     }
+
     // setHintAnyCount(cookies.hintAny);
     // setHintOneSetCount(cookies.hintOneSet);
     answerMap = new Map(
@@ -143,7 +171,18 @@ const Appbody = () => {
       })
     );
   }, []);
+  useEffect(() => {
+    if (existingData.length > 0) {
+      if (existingData.find((data) => data.userId === userid)) {
+        console.log("got it!");
+        setExistingScore(
+          existingData.find((data) => data.userId === userid).userScore
+        );
+      }
+    }
+  }, [JSON.stringify(existingData)]);
 
+  console.log(existingData);
   const steps = [
     {
       title: "Guess My Rule",
@@ -180,6 +219,11 @@ const Appbody = () => {
       title: "遊戲導覽",
       element: "#key",
       intro: "如果輸入的答案帶入方程式成立，鑰匙會亮起來，並打開一格密碼。",
+    },
+    {
+      title: "遊戲導覽",
+      element: "#score",
+      intro: "如果輸入的答案帶入方程式錯誤，會從總分100開始，答錯一次會扣5分。",
     },
     {
       title: "遊戲導覽",
@@ -255,7 +299,7 @@ const Appbody = () => {
       }
     }
   };
-
+  //console.log(existingUserScore);
   const backspaceButtonOnClick = () => {
     if (!inputIndex) {
       return;
@@ -293,6 +337,7 @@ const Appbody = () => {
   };
 
   const submitButtonOnclick = () => {
+    console.log(existingScore);
     console.log(submittedRecord);
     console.log(submittedRecordTableRows);
     if (
@@ -341,6 +386,7 @@ const Appbody = () => {
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
         setLevelcompletedOpen(true);
+        Rest.postLeaderBoard(userid, leaderBoardScore + existingScore);
 
         return;
       }
@@ -361,7 +407,10 @@ const Appbody = () => {
         currentSubmittedAnswer + ",錯誤 " + " C = " + correctAnswer
       );
       setKeyIconColor("Gray");
+
       new Audio(FailureSound).play();
+      setLeaderBoardScore(leaderBoardScore - 5);
+      setFalseAlertOpen(true);
     }
     //console.log(submittedRecordShow);
     setInputA("");
@@ -504,6 +553,17 @@ const Appbody = () => {
 
   return (
     <div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={flaseAlert}
+        onClose={() => {
+          setFalseAlertOpen(false);
+        }}
+        //message=""
+        autoHideDuration="2000"
+      >
+        <Alert severity="error">這組答案錯誤，分數-5 </Alert>
+      </Snackbar>
       <Dialog
         open={newLevelDialogueOpen}
         //TransitionComponent={Transition}
@@ -541,7 +601,10 @@ const Appbody = () => {
           <DialogContentText id="alert-dialog-slide-description">
             總共嘗試了{" "}
             <b>{submittedRecordTableRows.length + 1 - hintButtonCount}</b> 次
-            <br></br>
+            <br />
+            本關得到 <b>{leaderBoardScore} </b>分
+            <br />
+            累及有 <b>{existingScore + leaderBoardScore}</b>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -772,7 +835,7 @@ const Appbody = () => {
           container
           alignItems="center"
           justifyContent="center"
-          style={{ height: "70px" }}
+          style={{ height: "60px" }}
         >
           <Button
             className="submitBtn"
@@ -782,6 +845,7 @@ const Appbody = () => {
           >
             Submit
           </Button>
+
           <Dialog
             open={hintDialogOpen}
             onClose={() => {
@@ -866,7 +930,9 @@ const Appbody = () => {
             </Tooltip>
           </IconButton>
         </Grid>
-
+        <Box id="score" sx={{ mb: 2 }}>
+          本關計分 : {leaderBoardScore}
+        </Box>
         <Grid
           container
           direction="column"

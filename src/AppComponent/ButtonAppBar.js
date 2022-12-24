@@ -11,8 +11,28 @@ import Snackbar from "@mui/material/Snackbar";
 import MenuItem from "@mui/material/MenuItem";
 import copy from "copy-to-clipboard";
 import Popup from "./Popup";
+import Rest from "../Services/Rest";
+import axios from "axios";
+
+import {
+  Paper,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 
 const ButtonAppBar = () => {
+  const [leaderBoard, setLeaderBoard] = useState([]);
   const getUrlString = window.location.href;
   const userId = getUrlString.substring(
     getUrlString.lastIndexOf("/") + 1,
@@ -21,6 +41,7 @@ const ButtonAppBar = () => {
 
   console.log(userId);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [leaderBoardOpen, setLeaderBoardOpen] = useState(false);
   const [copySuccessful, SetCopySuccessfulOpen] = useState(false);
   const [copyFailed, setCopyFailedOpen] = useState(false);
   const copyHandler = () => {
@@ -29,6 +50,20 @@ const ButtonAppBar = () => {
     } else {
       setCopyFailedOpen(true);
     }
+  };
+  const getLeaderBoard = () => {
+    const leaderBoardData = axios
+      .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+      .then((res) => {
+        setLeaderBoard(
+          res.data
+            .sort((a, b) => {
+              return b.userScore - a.userScore;
+            })
+            .slice(0, 5)
+        );
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -65,12 +100,82 @@ const ButtonAppBar = () => {
                 setDrawerOpen(false);
               }}
             >
+              <MenuItem
+                onClick={() => {
+                  getLeaderBoard();
+                  setLeaderBoardOpen(true);
+                }}
+              >
+                排行榜
+              </MenuItem>
               <MenuItem onClick={copyHandler}>ID : {userId}</MenuItem>
               <MenuItem onClick={copyHandler}>
                 (點擊上方字串就可以複製 ID )
               </MenuItem>
             </Box>
           </Drawer>
+          <Dialog
+            open={leaderBoardOpen}
+            //TransitionComponent={Transition}
+          >
+            <DialogTitle align="center">{"排行榜"}</DialogTitle>
+            <DialogContent align="center">
+              <DialogContentText id="alert-dialog-slide-description">
+                <Grid
+                  container
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{ mt: 4.5, mb: 4 }}
+                >
+                  <TableContainer style={{ width: "350px" }} component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell style={{ width: "10px" }} align="center">
+                            no.
+                          </TableCell>
+                          <TableCell style={{ width: "80px" }} align="center">
+                            ID
+                          </TableCell>
+                          <TableCell style={{ width: "50px" }} align="center">
+                            關卡分數
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {leaderBoard.map((row, index) => (
+                          <TableRow
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              {index + 1}
+                            </TableCell>
+                            <TableCell align="center">{row.userId}</TableCell>
+                            <TableCell align="center">
+                              {row.userScore}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              </DialogContentText>
+            </DialogContent>
+            <Button
+              onClick={() => {
+                setLeaderBoardOpen(false);
+              }}
+            >
+              ok
+            </Button>
+          </Dialog>
           <Snackbar
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
             open={copySuccessful}
