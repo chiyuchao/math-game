@@ -604,7 +604,7 @@ const Appbody = () => {
             <br />
             本關得到 <b>{leaderBoardScore} </b>分
             <br />
-            累及有 <b>{existingScore + leaderBoardScore}</b>
+            累積有 <b>{existingScore + leaderBoardScore}</b>分
           </DialogContentText>
         </DialogContent>
         <DialogActions>
