@@ -1,5 +1,10 @@
 import * as React from "react";
 import {
+  Dialog,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  DialogActions,
   Box,
   Button,
   Modal,
@@ -15,7 +20,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 350,
+  width: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -32,55 +37,70 @@ export default function PopUp({ showPopup }) {
       <IconButton sx={{ color: "White" }} onClick={handleOpen}>
         <HelpIcon />
       </IconButton>
-      <Modal
+      <Dialog
         open={open}
         onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        aria-describedby="alert-dialog-slide-description"
       >
-        <Grid container alignItems="center" justifyContent="center" sx={style}>
-          <Typography
-            align="center"
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-          >
-            遊戲說明
-          </Typography>
-          <Typography
-            align="center"
-            id="modal-modal-description"
-            sx={{ mt: 2, mb: 2 }}
-          >
-            每一關的破關密碼都是一串有A,B,C三個未知數的算式。
-            但有部分的密碼需要被解開， 嘗試輸入正確ABC組合來打開完整的密碼串吧!
-          </Typography>
-          <Typography
+        {/* <DialogTitle container alignItems="center" justifyContent="center" sx={style}></DialogTitle> */}
+        <DialogTitle
+          align="center"
+          id="modal-modal-title"
+          variant="h6"
+          component="h2"
+        >
+          <b>遊戲說明</b>
+        </DialogTitle>
+        <DialogContent
+          align="left"
+          id="modal-modal-description"
+          sx={{ mt: 1, mb: 1 }}
+        >
+          嘗試輸入正確組合來打開有A,B,C三個未知數的密碼方程式!
+          <br />
+          <ul>
+            <li>
+              輸入的答案帶入方程式<b>成立</b>， 可以打開一格密碼。
+            </li>
+            <li>
+              輸入的答案帶入方程式<b>不成立</b>， 會從總分 100 開始，答錯一次會
+              <b>扣5分</b>。
+            </li>
+
+            <li>需要提示，可以點選黃色燈泡!</li>
+            <li>下滑到底可以看到答題記錄。</li>
+          </ul>
+        </DialogContent>
+        {/* <Typography
             align="center"
             id="modal-modal-description"
             sx={{ mb: 2 }}
-          ></Typography>
-          <Typography
-            align="center"
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-          >
-            遊戲目標
-          </Typography>
-          <Typography
-            align="center"
-            id="modal-modal-description"
-            sx={{ mt: 2 }}
-          >
+          ></Typography> */}
+        <DialogTitle
+          align="center"
+          id="modal-modal-title"
+          variant="h6"
+          component="h2"
+        >
+          <b>遊戲目標</b>
+        </DialogTitle>
+        <DialogContent>
+          <Typography align="left" id="modal-modal-description" sx={{ mt: 2 }}>
             每輸入一組正確的答案組合 ，可以解開一格密碼，
             將所有密碼解開就過關了!
           </Typography>
-          <Button sx={{ mt: 2 }} align="center" onClick={handleClose}>
-            close
-          </Button>
-        </Grid>
-      </Modal>
+        </DialogContent>
+        <DialogActions>
+          <Grid container alignItems="center" justifyContent="center">
+            <Button
+              sx={{ alignContent: "center", mb: 2 }}
+              onClick={handleClose}
+            >
+              close
+            </Button>
+          </Grid>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

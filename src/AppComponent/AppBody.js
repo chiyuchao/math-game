@@ -47,6 +47,7 @@ import { Cookies, useCookies } from "react-cookie";
 import { width } from "@mui/system";
 import axios from "axios";
 import { convertLength } from "@mui/material/styles/cssUtils";
+import HelpIcon from "@mui/icons-material/Help";
 
 const submittedRecordShow = new Set();
 const submittedRecord = new Set();
@@ -90,6 +91,7 @@ const Appbody = () => {
   );
   const [selectIndexModalOpen, setSelectIndexModalOpen] = useState(false);
   const [stepEnable, setStepEnable] = useState(true);
+
   const handleClickOpen = () => {
     setnewLevelDialogueOpen(true);
   };
@@ -239,13 +241,13 @@ const Appbody = () => {
     {
       title: "遊戲導覽",
       element: "#menuButton",
-      intro: "點擊左上角打開選單有排行榜，可以看看自己表現得如何",
+      intro: "點擊左上角打開選單有排行榜，可以看看自己表現得如何。",
     },
     {
       title: "遊戲導覽",
-      element: "#menuButton",
+
       intro:
-        "完成遊戲後需要在問卷中填寫你的ID，一樣點擊左上角打開選單複製ID!</br>結束導覽，開始遊戲吧~",
+        "如果遊戲中有不清楚，點擊右上角的❔，打開遊戲說明</br>結束導覽，開始遊戲吧~",
     },
   ];
 
@@ -391,7 +393,7 @@ const Appbody = () => {
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
         setLevelcompletedOpen(true);
-        Rest.postLeaderBoard(userid, leaderBoardScore + existingScore);
+        Rest.postLeaderBoard(userid, id, leaderBoardScore + existingScore);
 
         return;
       }

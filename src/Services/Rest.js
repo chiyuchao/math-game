@@ -66,10 +66,11 @@ const Rest = {
       .then((response) => console.log("Success:", response));
   },
 
-  postLeaderBoard: (userId, userScore) => {
+  postLeaderBoard: (userId, level, userScore) => {
     var url = "https://game.ntustmeg.tw/postMathGameLeaderBoard";
     var data = {
       userId: userId,
+      level: level,
       userScore: userScore,
     };
     console.log(data);

@@ -30,6 +30,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+import HelpIcon from "@mui/icons-material/Help";
 
 const ButtonAppBar = () => {
   const [leaderBoard, setLeaderBoard] = useState([]);
@@ -40,6 +41,7 @@ const ButtonAppBar = () => {
   );
 
   console.log(userId);
+  const [stepReopen, setStepReopen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [leaderBoardOpen, setLeaderBoardOpen] = useState(false);
   const [copySuccessful, SetCopySuccessfulOpen] = useState(false);
@@ -137,8 +139,11 @@ const ButtonAppBar = () => {
                           <TableCell style={{ width: "80px" }} align="center">
                             ID
                           </TableCell>
+                          <TableCell style={{ width: "30px" }} align="center">
+                            關卡
+                          </TableCell>
                           <TableCell style={{ width: "50px" }} align="center">
-                            關卡分數
+                            累積分數
                           </TableCell>
                         </TableRow>
                       </TableHead>
@@ -156,7 +161,10 @@ const ButtonAppBar = () => {
                             >
                               {index + 1}
                             </TableCell>
-                            <TableCell align="center">{row.userId}</TableCell>
+                            <TableCell align="center">
+                              {row.userId.slice(0, 5)}
+                            </TableCell>
+                            <TableCell align="center">{row.level}</TableCell>
                             <TableCell align="center">
                               {row.userScore}
                             </TableCell>
@@ -197,8 +205,16 @@ const ButtonAppBar = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Guess My Rule
           </Typography>
-
           <Popup />
+
+          {/* <IconButton
+            sx={{ color: "White" }}
+            onClick={() => {
+              setStepReopen(true);
+            }}
+          >
+            <HelpIcon />
+          </IconButton> */}
         </Toolbar>
       </AppBar>
     </Box>
