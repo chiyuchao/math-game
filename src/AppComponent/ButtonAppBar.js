@@ -204,7 +204,11 @@ const ButtonAppBar = () => {
           />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Guess My Rule
+            {/* <Typography sx={{ color: "#EBEBFF", fontSize: 1 }}>
+              <lighter>©copyright 2022 by NTUSTMEG</lighter>
+            </Typography> */}
           </Typography>
+
           <Popup />
 
           {/* <IconButton

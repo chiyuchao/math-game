@@ -716,9 +716,19 @@ const Appbody = () => {
         message="這組答案已經輸入過了!"
         autoHideDuration="2000"
       />
-
+      <Box sx={{ mt: 1.5 }}>
+        <Typography sx={{ color: "#E0E0FF", fontSize: 1 }}>
+          <lighter>©copyright 2022 by NTUSTMEG</lighter>
+        </Typography>
+      </Box>
       <section style={{ height: "90vh" }} id="step1">
-        <h1 style={{ color: "rgba(52, 52, 52, 0.5)", height: "5px" }}>
+        <h1
+          style={{
+            color: "rgba(52, 52, 52, 0.5)",
+            height: "4px",
+            color: "#FFFF30",
+          }}
+        >
           Level {id}
         </h1>
 

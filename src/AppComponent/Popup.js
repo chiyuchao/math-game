@@ -50,15 +50,15 @@ export default function PopUp({ showPopup }) {
           component="h2"
         >
           <b>遊戲說明</b>
+          <Typography align="center" sx={{ color: "#696969", fontSize: 1 }}>
+            <lighter>©copyright 2022 by NTUSTMEG</lighter>
+          </Typography>
         </DialogTitle>
-        <DialogContent
-          align="left"
-          id="modal-modal-description"
-          sx={{ mt: 1, mb: 1 }}
-        >
+        <DialogContent align="left" id="modal-modal-description" sx={{ mt: 1 }}>
           嘗試輸入正確組合來打開有A,B,C三個未知數的密碼方程式!
           <br />
           <ul>
+            <li>請使用頁面中的實體數字鍵輸入</li>
             <li>
               輸入的答案帶入方程式<b>成立</b>， 可以打開一格密碼。
             </li>
@@ -85,7 +85,7 @@ export default function PopUp({ showPopup }) {
           <b>遊戲目標</b>
         </DialogTitle>
         <DialogContent>
-          <Typography align="left" id="modal-modal-description" sx={{ mt: 2 }}>
+          <Typography align="left" id="modal-modal-description" sx={{ mt: 1 }}>
             每輸入一組正確的答案組合 ，可以解開一格密碼，
             將所有密碼解開就過關了!
           </Typography>
@@ -93,12 +93,22 @@ export default function PopUp({ showPopup }) {
         <DialogActions>
           <Grid container alignItems="center" justifyContent="center">
             <Button
-              sx={{ alignContent: "center", mb: 2 }}
+              sx={{ alignContent: "center", ml: 10 }}
               onClick={handleClose}
             >
               close
             </Button>
           </Grid>
+          <img
+            className="center"
+            src={require("../Assets/logo.png")}
+            style={{
+              width: "50px",
+              height: "50px",
+              alignSelf: "flex-end",
+              padding: 10,
+            }}
+          />
         </DialogActions>
       </Dialog>
     </div>
