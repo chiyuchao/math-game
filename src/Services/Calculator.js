@@ -12,7 +12,11 @@ const Calculator = {
       if (indexA === 0) {
         a = "1";
       } else {
-        a = gd.slice(0, indexA).join("");
+        if (gd.slice(0, indexA).join("") === "-") {
+          a = "-1";
+        } else {
+          a = gd.slice(0, indexA).join("");
+        }
       }
 
       switch (index2 - 1) {
@@ -147,7 +151,11 @@ const Calculator = {
       if (indexA === 0) {
         a = "1";
       } else {
-        a = gd.slice(0, indexA).join("");
+        if (gd.slice(0, indexA).join("") === "-") {
+          a = "-1";
+        } else {
+          a = gd.slice(0, indexA).join("");
+        }
       }
       if ((b === "+") | (b === "-")) {
         b = b + "1";
