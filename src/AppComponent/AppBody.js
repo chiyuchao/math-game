@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+
 import {
   Alert,
   DialogTitle,
@@ -48,6 +49,7 @@ import { width } from "@mui/system";
 import axios from "axios";
 import { convertLength } from "@mui/material/styles/cssUtils";
 import HelpIcon from "@mui/icons-material/Help";
+import ButtonAppBar from "./ButtonAppBar";
 
 const submittedRecordShow = new Set();
 const submittedRecord = new Set();
@@ -76,7 +78,7 @@ const Appbody = () => {
   const [inputB, setInputB] = useState("");
   const [inputC, setInputC] = useState("");
   const [leaderBoardScore, setLeaderBoardScore] = useState(100);
-
+  const [userRank, setUserRank] = useState(0);
   const [flaseAlert, setFalseAlertOpen] = useState(false);
   const [textfieldColorA, setTextfieldColorA] = useState("");
   const [textfieldColorB, setTextfieldColorB] = useState("");
@@ -114,6 +116,9 @@ const Appbody = () => {
   const [hintAnyCount, setHintAnyCount] = useState(0);
   const [hintOneSetCount, setHintOneSetCount] = useState(0);
   const [hintABDisabled, setHintABDisabled] = useState(false);
+  const [nameInputOpen, setNameInputOpen] = useState(false);
+  const [nickName, setNickName] = useState("");
+  const [nicknameBar, setNickNameBarOpen] = useState(false);
 
   const [cookies, setCookie, removeCookie] = useCookies(
     ["level"],
@@ -123,19 +128,19 @@ const Appbody = () => {
     ["hintOneSet"]
   );
   useEffect(() => {
-    const getLeaderBoard = async () => {
-      const data = await axios
-        .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => console.log(err));
-      setExistingData(data);
-      // if (data.find((data) => data.userId === userid)) {
-      //   setExistingScore(data.find((data) => data.userId === userid).userscore);
-      // }
-    };
-    getLeaderBoard();
+    // const getLeaderBoard = async () => {
+    //   const data = await axios
+    //     .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+    //     .then((res) => {
+    //       return res.data;
+    //     })
+    //     .catch((err) => console.log(err));
+    //   setExistingData(data);
+    //   // if (data.find((data) => data.userId === userid)) {
+    //   //   setExistingScore(data.find((data) => data.userId === userid).userscore);
+    //   // }
+    // };
+    // getLeaderBoard();
 
     //setExistingScore(existingData.find((data) => data.userId === userid));
 
@@ -173,12 +178,32 @@ const Appbody = () => {
       })
     );
   }, []);
+  const getLeaderBoard = async () => {
+    const data = await axios
+      .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => console.log(err));
+    setExistingData(data);
+    // if (data.find((data) => data.userId === userid)) {
+    //   setExistingScore(data.find((data) => data.userId === userid).userscore);
+    // }
+  };
+  getLeaderBoard();
   useEffect(() => {
     if (existingData.length > 0) {
       if (existingData.find((data) => data.userId === userid)) {
         console.log("got it!");
         setExistingScore(
           existingData.find((data) => data.userId === userid).userScore
+        );
+        setUserRank(
+          existingData
+            .sort((a, b) => {
+              return b.userScore - a.userScore;
+            })
+            .findIndex((data) => data.userId === userid)
         );
       }
     }
@@ -247,7 +272,7 @@ const Appbody = () => {
       title: "遊戲導覽",
 
       intro:
-        "如果遊戲中有不清楚，點擊右上角的❔，打開遊戲說明</br>結束導覽，開始遊戲吧~",
+        "如果遊戲中有不清楚，點擊右上角的❔，打開遊戲說明</br>結束導覽，輸入你的暱稱後開始遊戲吧~",
     },
   ];
 
@@ -611,7 +636,8 @@ const Appbody = () => {
             <br />
             本關得到 <b>{leaderBoardScore} </b>分
             <br />
-            累積有 <b>{existingScore + leaderBoardScore}</b>分
+            累積有 <b>{existingScore + leaderBoardScore}</b>分，是第
+            <b>{userRank + 1}</b>名
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -717,8 +743,17 @@ const Appbody = () => {
         autoHideDuration="2000"
       />
       <Box sx={{ mt: 1.5 }}>
-        <Typography sx={{ color: "#E0E0FF", fontSize: 1 }}>
-          <lighter>©copyright 2022 by NTUSTMEG</lighter>
+        <Typography sx={{ color: "#E0E0FF", fontSize: 2 }}>
+          <lighter>
+            ©copyright 2022 by{" "}
+            <a
+              href="https://sites.google.com/view/hthou/meg%E5%9C%98%E9%9A%8A"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <font color="#E0E0FF">NTUSTMEG</font>
+            </a>
+          </lighter>
         </Typography>
       </Box>
       <section style={{ height: "90vh" }} id="step1">
@@ -729,7 +764,7 @@ const Appbody = () => {
             color: "#FFFF30",
           }}
         >
-          Level {id}
+          Level 50-{id}
         </h1>
 
         <Grid
@@ -1134,14 +1169,67 @@ const Appbody = () => {
           </TableContainer>
         </Grid>
       </section>
+      <Dialog
+        keepMounted
+        aria-describedby="alert-dialog-slide-description"
+        open={nameInputOpen}
+        onclose={() => {
+          setNameInputOpen(false);
+        }}
+      >
+        <DialogTitle>請輸入你的暱稱...</DialogTitle>
+        <DialogContent>
+          <TextField
+            inputProps={{ maxLength: 10 }}
+            // error={nickname.length === 0}
+            // helperText={!nickname.length ? "請輸入暱稱" : ""}
+            value={nickName}
+            onChange={(e) => {
+              setNickName(e.target.value);
+            }}
+            autoFocus
+            margin="dense"
+            id="name"
+            label="name"
+            type="name"
+            fullWidth
+            variant="standard"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              if (nickName) {
+                Rest.postNickName(userid, nickName);
+                setNameInputOpen(false);
+              } else {
+                setNickNameBarOpen(true);
+              }
+            }}
+          >
+            確定
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={nicknameBar}
+        onClose={() => {
+          setNickNameBarOpen(false);
+        }}
+        message="請輸入暱稱!"
+        autoHideDuration="1000"
+      />
       <Steps
         onComplete={() => {
           setStepEnable(false);
+          setNameInputOpen(true);
         }}
         enabled={stepEnable && id === "1"}
         steps={steps}
         initialStep={0}
         onExit={() => {
+          setNameInputOpen(true);
           setStepEnable(false);
         }}
         // onStart={() => {

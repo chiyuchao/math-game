@@ -51,7 +51,16 @@ export default function PopUp({ showPopup }) {
         >
           <b>遊戲說明</b>
           <Typography align="center" sx={{ color: "#696969", fontSize: 1 }}>
-            <lighter>©copyright 2022 by NTUSTMEG</lighter>
+            <lighter>
+              ©copyright 2022 by{" "}
+              <a
+                href="https://sites.google.com/view/hthou/meg%E5%9C%98%E9%9A%8A"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <font color="#696969">NTUSTMEG</font>
+              </a>
+            </lighter>
           </Typography>
         </DialogTitle>
         <DialogContent align="left" id="modal-modal-description" sx={{ mt: 1 }}>
@@ -70,26 +79,41 @@ export default function PopUp({ showPopup }) {
             <li>需要提示，可以點選黃色燈泡!</li>
             <li>下滑到底可以看到答題記錄。</li>
           </ul>
-        </DialogContent>
+          <b>
+            每輸入一組正確的答案組合 ，可以解開一格密碼，
+            將所有密碼解開就過關了!
+          </b>
+        </DialogContent>{" "}
+        <p align="center">
+          <iframe
+            width="320px"
+            height="160px"
+            src={`https://www.youtube.com/embed/4usyGHCgdP0`}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="Embedded youtube"
+          />
+        </p>
         {/* <Typography
             align="center"
             id="modal-modal-description"
             sx={{ mb: 2 }}
           ></Typography> */}
-        <DialogTitle
+        {/* <DialogTitle
           align="center"
           id="modal-modal-title"
           variant="h6"
           component="h2"
         >
           <b>遊戲目標</b>
-        </DialogTitle>
-        <DialogContent>
+        </DialogTitle> */}
+        {/* <DialogContent>
           <Typography align="left" id="modal-modal-description" sx={{ mt: 1 }}>
             每輸入一組正確的答案組合 ，可以解開一格密碼，
             將所有密碼解開就過關了!
           </Typography>
-        </DialogContent>
+        </DialogContent> */}
         <DialogActions>
           <Grid container alignItems="center" justifyContent="center">
             <Button
@@ -99,16 +123,22 @@ export default function PopUp({ showPopup }) {
               close
             </Button>
           </Grid>
-          <img
-            className="center"
-            src={require("../Assets/logo.png")}
-            style={{
-              width: "50px",
-              height: "50px",
-              alignSelf: "flex-end",
-              padding: 10,
-            }}
-          />
+          <a
+            href="https://sites.google.com/view/hthou/meg%E5%9C%98%E9%9A%8A"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              className="center"
+              src={require("../Assets/logo.png")}
+              style={{
+                width: "50px",
+                height: "50px",
+                alignSelf: "flex-end",
+                padding: 10,
+              }}
+            />
+          </a>
         </DialogActions>
       </Dialog>
     </div>

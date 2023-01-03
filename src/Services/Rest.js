@@ -85,6 +85,24 @@ const Rest = {
       .catch((error) => console.error("Error:", error))
       .then((response) => console.log("Success:", response));
   },
+  postNickName: (userId, nickName) => {
+    var url = "https://game.ntustmeg.tw/postMathGameLeaderBoard";
+    var data = {
+      userId: userId,
+      nickName: nickName,
+    };
+    console.log(data);
+    axios({
+      url: url,
+      method: "POST",
+      data: data,
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => console.error("Error:", error))
+      .then((response) => console.log("Success:", response));
+  },
   getLeaderBoard: () => {
     axios("https://game.ntustmeg.tw/getMathGameLeaderBoard")
       .then((response) => console.log(response))

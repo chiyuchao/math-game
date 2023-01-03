@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -30,17 +30,20 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+import Appbody from "./AppBody";
 import HelpIcon from "@mui/icons-material/Help";
 
-const ButtonAppBar = () => {
+const ButtonAppBar = (props) => {
+  const [existingData, setExistingData] = useState([]);
   const [leaderBoard, setLeaderBoard] = useState([]);
   const getUrlString = window.location.href;
   const userId = getUrlString.substring(
     getUrlString.lastIndexOf("/") + 1,
     getUrlString.length
   );
-
-  console.log(userId);
+  const [userNickName, setUserNickName] = useState("");
+  const [leaderBoardShow, setLeaderBoardShow] = useState([]);
+  const [userRank, setUserRank] = useState(0);
   const [stepReopen, setStepReopen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [leaderBoardOpen, setLeaderBoardOpen] = useState(false);
@@ -53,20 +56,60 @@ const ButtonAppBar = () => {
       setCopyFailedOpen(true);
     }
   };
-  const getLeaderBoard = () => {
-    const leaderBoardData = axios
+  // useEffect(() => {
+  //   const getLeaderBoard = async () => {
+  //     const data = await axios
+  //       .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+  //       .then((res) => {
+  //         return res.data;
+  //       })
+  //       .catch((err) => console.log(err));
+  //     setExistingData(data);
+  //   };
+  //   getLeaderBoard();
+  // }, []);
+  const getLeaderBoard = async () => {
+    const data = await axios
       .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
       .then((res) => {
-        setLeaderBoard(
-          res.data
-            .sort((a, b) => {
-              return b.userScore - a.userScore;
-            })
-            .slice(0, 5)
-        );
+        return res.data;
       })
       .catch((err) => console.log(err));
+    setExistingData(data);
   };
+  getLeaderBoard();
+
+  // const getLeaderBoard = () => {
+  //   const leaderBoardData = axios
+  //     .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+  //     .then((res) => {
+  //       setLeaderBoard(res.data);
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
+  useEffect(() => {
+    if (existingData.length > 0) {
+      if (existingData.find((data) => data.userId === userId)) {
+        console.log("got it!");
+        setLeaderBoardShow(
+          existingData.sort((a, b) => {
+            return b.userScore - a.userScore;
+          })
+        );
+        setUserNickName(
+          existingData.find((data) => data.userId === userId).nickName
+        );
+        setUserRank(
+          leaderBoardShow.findIndex((data) => data.userId === userId)
+        );
+      }
+    }
+  }, [JSON.stringify(existingData)]);
+  // const leaderBoardShow = leaderBoard
+  //   .sort((a, b) => {
+  //     return b.userScore - a.userScore;
+  //   })
+  //   .slice(0, 50);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -104,16 +147,12 @@ const ButtonAppBar = () => {
             >
               <MenuItem
                 onClick={() => {
-                  getLeaderBoard();
                   setLeaderBoardOpen(true);
                 }}
               >
                 排行榜
               </MenuItem>
               <MenuItem onClick={copyHandler}>ID : {userId}</MenuItem>
-              <MenuItem onClick={copyHandler}>
-                (點擊上方字串就可以複製 ID )
-              </MenuItem>
             </Box>
           </Drawer>
           <Dialog
@@ -123,13 +162,19 @@ const ButtonAppBar = () => {
             <DialogTitle align="center">{"排行榜"}</DialogTitle>
             <DialogContent align="center">
               <DialogContentText id="alert-dialog-slide-description">
+                <Typography>
+                  您({userNickName}),目前為第<b>{userRank + 1}</b>名
+                </Typography>
                 <Grid
                   container
                   alignItems="center"
                   justifyContent="center"
                   sx={{ mt: 4.5, mb: 4 }}
                 >
-                  <TableContainer style={{ width: "350px" }} component={Paper}>
+                  <TableContainer
+                    style={{ width: "380px", height: "300px" }}
+                    component={Paper}
+                  >
                     <Table>
                       <TableHead>
                         <TableRow>
@@ -137,7 +182,7 @@ const ButtonAppBar = () => {
                             no.
                           </TableCell>
                           <TableCell style={{ width: "80px" }} align="center">
-                            ID
+                            名字(ID)
                           </TableCell>
                           <TableCell style={{ width: "30px" }} align="center">
                             關卡
@@ -148,28 +193,35 @@ const ButtonAppBar = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {leaderBoard.map((row, index) => (
-                          <TableRow
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <TableCell
-                              align="center"
-                              component="th"
-                              scope="row"
+                        {existingData
+                          .sort((a, b) => {
+                            return b.userScore - a.userScore;
+                          })
+                          .slice(0, 50)
+                          .map((row, index) => (
+                            <TableRow
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
                             >
-                              {index + 1}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.userId.slice(0, 5)}
-                            </TableCell>
-                            <TableCell align="center">{row.level}</TableCell>
-                            <TableCell align="center">
-                              {row.userScore}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              <TableCell
+                                align="center"
+                                component="th"
+                                scope="row"
+                              >
+                                {index + 1}
+                              </TableCell>
+                              <TableCell align="center">
+                                {row.nickName}({row.userId.slice(0, 5)})
+                              </TableCell>
+                              <TableCell align="center">{row.level}</TableCell>
+                              <TableCell align="center">
+                                {row.userScore}
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </TableContainer>
