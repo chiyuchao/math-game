@@ -636,7 +636,7 @@ const Appbody = () => {
             <br />
             本關得到 <b>{leaderBoardScore} </b>分
             <br />
-            累積有 <b>{existingScore + leaderBoardScore}</b>分，是第
+            累積有 <b>{existingScore}</b>分，是第
             <b>{userRank + 1}</b>名
           </DialogContentText>
         </DialogContent>
