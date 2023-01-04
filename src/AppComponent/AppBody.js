@@ -1225,7 +1225,7 @@ const Appbody = () => {
         <DialogContent>確定要重新開始嗎?</DialogContent>
         <DialogActions alignItems="center">
           <Button
-            href="/"
+            href="https://game.ntustmeg.tw/guessmyrule/"
             onClick={() => {
               removeCookie("level");
               removeCookie("userId");
