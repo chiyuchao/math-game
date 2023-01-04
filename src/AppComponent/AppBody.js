@@ -56,6 +56,7 @@ const submittedRecord = new Set();
 
 let answerMap = new Map();
 let indexValue = -1;
+let rank = 0;
 const Appbody = () => {
   const { id } = useParams();
   const { userid } = useParams();
@@ -79,6 +80,7 @@ const Appbody = () => {
   const [inputC, setInputC] = useState("");
   const [leaderBoardScore, setLeaderBoardScore] = useState(100);
   const [userRank, setUserRank] = useState(0);
+  console.log(userRank);
   const [flaseAlert, setFalseAlertOpen] = useState(false);
   const [textfieldColorA, setTextfieldColorA] = useState("");
   const [textfieldColorB, setTextfieldColorB] = useState("");
@@ -119,6 +121,8 @@ const Appbody = () => {
   const [nameInputOpen, setNameInputOpen] = useState(false);
   const [nickName, setNickName] = useState("");
   const [nicknameBar, setNickNameBarOpen] = useState(false);
+  const [restartOpen, setRestartOpen] = useState(false);
+  //let rank = 0;
 
   const [cookies, setCookie, removeCookie] = useCookies(
     ["level"],
@@ -140,7 +144,16 @@ const Appbody = () => {
     //   //   setExistingScore(data.find((data) => data.userId === userid).userscore);
     //   // }
     // };
-    // getLeaderBoard();
+    const getLeaderBoard = async () => {
+      const data = await axios
+        .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+        .then((res) => {
+          return res.data;
+        })
+        .catch((err) => console.log(err));
+      setExistingData(data);
+    };
+    getLeaderBoard();
 
     //setExistingScore(existingData.find((data) => data.userId === userid));
 
@@ -178,23 +191,12 @@ const Appbody = () => {
       })
     );
   }, []);
-  const getLeaderBoard = async () => {
-    const data = await axios
-      .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
-      .then((res) => {
-        return res.data;
-      })
-      .catch((err) => console.log(err));
-    setExistingData(data);
-    // if (data.find((data) => data.userId === userid)) {
-    //   setExistingScore(data.find((data) => data.userId === userid).userscore);
-    // }
-  };
-  getLeaderBoard();
+
   useEffect(() => {
     if (existingData.length > 0) {
       if (existingData.find((data) => data.userId === userid)) {
         console.log("got it!");
+
         setExistingScore(
           existingData.find((data) => data.userId === userid).userScore
         );
@@ -209,7 +211,6 @@ const Appbody = () => {
     }
   }, [JSON.stringify(existingData)]);
 
-  console.log(existingData);
   const steps = [
     {
       title: "Guess My Rule",
@@ -372,6 +373,7 @@ const Appbody = () => {
     console.log(existingScore);
     console.log(submittedRecord);
     console.log(submittedRecordTableRows);
+
     if (
       inputA.length === 0 ||
       inputA === "-" ||
@@ -414,6 +416,31 @@ const Appbody = () => {
       new Audio(CorrectSound).play();
 
       if (answerMap.size === 0) {
+        let localLeaderBoard = existingData;
+        const index = localLeaderBoard.findIndex(
+          (data) => data.userId === userid
+        );
+        console.log(index);
+        console.log(localLeaderBoard[index]);
+        if (localLeaderBoard[index] === undefined) {
+          localLeaderBoard.push({
+            userId: userid,
+            userScore: leaderBoardScore + existingScore,
+          });
+        } else {
+          localLeaderBoard[index].userScore = leaderBoardScore + existingScore;
+        }
+        //console.log(localLeaderBoard[index].userScore);
+        console.log(existingScore);
+        console.log(leaderBoardScore);
+        console.log(localLeaderBoard[index]);
+        let leaderBoard = localLeaderBoard.sort((a, b) => {
+          return b.userScore - a.userScore;
+        });
+
+        rank = leaderBoard.findIndex((data) => data.userId === userid);
+        console.log(rank);
+
         setCookie("level", parseInt(id) + 1, { path: "/" });
         setTimeout(() => {}, 1000);
         new Audio(GameClearanceSound).play();
@@ -636,8 +663,8 @@ const Appbody = () => {
             <br />
             本關得到 <b>{leaderBoardScore} </b>分
             <br />
-            累積有 <b>{existingScore}</b>分，是第
-            <b>{userRank + 1}</b>名
+            累積有 <b>{leaderBoardScore + existingScore}</b>分，是第
+            <b>{rank + 1}</b>名
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -1168,7 +1195,56 @@ const Appbody = () => {
             </Table>
           </TableContainer>
         </Grid>
+        <Box height="10vh">
+          <Button
+            align="center"
+            size="big"
+            sx={{ borderColor: "#509993", color: "#57555E", mt: 5 }}
+            onClick={() => {
+              setRestartOpen(true);
+            }}
+            // href="/"
+            variant="outlined"
+            // startIcon={<LocalFloristIcon sx={{ color: "#FF7070" }} />}
+          >
+            重新開始
+          </Button>
+        </Box>
       </section>
+      <Dialog
+        keepMounted
+        aria-describedby="alert-dialog-slide-description"
+        open={restartOpen}
+        onclose={() => {
+          setRestartOpen(false);
+        }}
+      >
+        <DialogTitle>
+          <b>重新開始</b>
+        </DialogTitle>
+        <DialogContent>確定要重新開始嗎?</DialogContent>
+        <DialogActions alignItems="center">
+          <Button
+            href="/"
+            onClick={() => {
+              removeCookie("level");
+              removeCookie("userId");
+              removeCookie("hintAB");
+              removeCookie("hintAny");
+              removeCookie("hintOneSet");
+            }}
+          >
+            確定
+          </Button>
+          <Button
+            onClick={() => {
+              setRestartOpen(false);
+            }}
+          >
+            取消
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog
         keepMounted
         aria-describedby="alert-dialog-slide-description"

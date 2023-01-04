@@ -56,18 +56,7 @@ const ButtonAppBar = (props) => {
       setCopyFailedOpen(true);
     }
   };
-  // useEffect(() => {
-  //   const getLeaderBoard = async () => {
-  //     const data = await axios
-  //       .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
-  //       .then((res) => {
-  //         return res.data;
-  //       })
-  //       .catch((err) => console.log(err));
-  //     setExistingData(data);
-  //   };
-  //   getLeaderBoard();
-  // }, []);
+
   const getLeaderBoard = async () => {
     const data = await axios
       .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
@@ -77,7 +66,17 @@ const ButtonAppBar = (props) => {
       .catch((err) => console.log(err));
     setExistingData(data);
   };
-  getLeaderBoard();
+
+  // const getLeaderBoard = async () => {
+  //   const data = await axios
+  //     .get("https://game.ntustmeg.tw/getMathGameLeaderBoard")
+  //     .then((res) => {
+  //       return res.data;
+  //     })
+  //     .catch((err) => console.log(err));
+  //   setExistingData(data);
+  // };
+  // getLeaderBoard();
 
   // const getLeaderBoard = () => {
   //   const leaderBoardData = axios
@@ -118,6 +117,7 @@ const ButtonAppBar = (props) => {
           <IconButton
             id="menuButton"
             onClick={() => {
+              getLeaderBoard();
               setDrawerOpen(true);
             }}
             size="large"
@@ -135,7 +135,7 @@ const ButtonAppBar = (props) => {
           >
             <Box
               sx={{
-                width: 400,
+                width: 200,
               }}
               role="presentation"
               onClick={() => {
@@ -152,7 +152,9 @@ const ButtonAppBar = (props) => {
               >
                 排行榜
               </MenuItem>
-              <MenuItem onClick={copyHandler}>ID : {userId}</MenuItem>
+              <MenuItem onClick={copyHandler}>
+                暱稱: {userNickName}; ID:{userId.slice(0, 5)}{" "}
+              </MenuItem>
             </Box>
           </Drawer>
           <Dialog
