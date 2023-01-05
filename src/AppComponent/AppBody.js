@@ -639,7 +639,7 @@ const Appbody = () => {
           <Button onClick={handleNewLevelDialogueClose}></Button>
           <Button
             onClick={() => {
-              window.location.href = "/level-select/";
+              window.location.href = "/guessmyrule/";
             }}
           >
             回首頁
