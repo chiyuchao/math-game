@@ -199,7 +199,7 @@ const ButtonAppBar = (props) => {
                           .sort((a, b) => {
                             return b.userScore - a.userScore;
                           })
-                          .slice(0, 50)
+                          .slice(0, 100)
                           .map((row, index) => (
                             <TableRow
                               sx={{

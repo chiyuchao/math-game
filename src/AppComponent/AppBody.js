@@ -663,7 +663,7 @@ const Appbody = () => {
             <br />
             本關得到 <b>{leaderBoardScore} </b>分
             <br />
-            累積有 <b>{leaderBoardScore + existingScore}</b>分，是第
+            累積有 <b>{existingScore}</b>分，是第
             <b>{rank + 1}</b>名
           </DialogContentText>
         </DialogContent>
@@ -1225,13 +1225,13 @@ const Appbody = () => {
         <DialogContent>確定要重新開始嗎?</DialogContent>
         <DialogActions alignItems="center">
           <Button
-            href="https://game.ntustmeg.tw/guessmyrule/"
+            href="/guessmyrule/"
             onClick={() => {
-              removeCookie("level");
-              removeCookie("userId");
-              removeCookie("hintAB");
-              removeCookie("hintAny");
-              removeCookie("hintOneSet");
+              removeCookie("level", { path: "/" });
+              removeCookie("userId", { path: "/" });
+              removeCookie("hintAB", { path: "/" });
+              removeCookie("hintAny", { path: "/" });
+              removeCookie("hintOneSet", { path: "/" });
             }}
           >
             確定
