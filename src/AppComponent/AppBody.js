@@ -639,6 +639,11 @@ const Appbody = () => {
           <Button onClick={handleNewLevelDialogueClose}></Button>
           <Button
             onClick={() => {
+              removeCookie("level", { path: "/" });
+              removeCookie("userId", { path: "/" });
+              removeCookie("hintAB", { path: "/" });
+              removeCookie("hintAny", { path: "/" });
+              removeCookie("hintOneSet", { path: "/" });
               window.location.href = "/guessmyrule/";
             }}
           >
