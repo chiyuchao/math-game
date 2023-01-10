@@ -164,9 +164,13 @@ const ButtonAppBar = (props) => {
             <DialogTitle align="center">{"排行榜"}</DialogTitle>
             <DialogContent align="center">
               <DialogContentText id="alert-dialog-slide-description">
-                <Typography>
-                  您({userNickName}),目前為第<b>{userRank + 1}</b>名
-                </Typography>
+                {userNickName ? (
+                  <Typography>
+                    您({userNickName}),目前為第<b>{userRank + 1}</b>名
+                  </Typography>
+                ) : (
+                  <Typography></Typography>
+                )}
                 <Grid
                   container
                   alignItems="center"
