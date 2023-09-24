@@ -1,6 +1,6 @@
 {
   "name": "math-game",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "homepage": "https://game.ntustmeg.tw/guessmyrule/",
   "private": true,
   "dependencies": {

@@ -86,10 +86,12 @@ body {
   background-image: url("./Assets/inputRP.png");
   background-size: cover;
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 .hexagonIpuntRight1 input {
   padding-top: 0.4em;
+  cursor: pointer;
 }
 
 .hexagonIpuntLeft2 {
@@ -109,10 +111,12 @@ body {
   background-image: url("./Assets/inputRG.png");
   background-size: cover;
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 .hexagonIpuntRight2 input {
   padding-top: 0.4em;
+  cursor: pointer;
 }
 
 .hexagonIpuntLeft3 {
@@ -132,10 +136,12 @@ body {
   background-image: url("./Assets/inputRO.png");
   background-size: cover;
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 .hexagonIpuntRight3 input {
   padding-top: 0.4em;
+  cursor: pointer;
 }
 
 .hexagonBtn {
@@ -172,4 +178,14 @@ body {
   padding-bottom: 0.8em !important;
   /* padding-right: 1em !important;
   font-size: 1.3em !important; */
+}
+
+.fakeBox{
+  width: 130px;
+  height: 40.2px;
+  position: absolute;
+  background-color: red;
+  z-index: 10;
+  opacity: 0;
+  cursor: pointer;
 }

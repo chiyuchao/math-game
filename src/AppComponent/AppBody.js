@@ -278,6 +278,7 @@ const Appbody = () => {
   ];
 
   const textfieldOnClick = (inputInd) => {
+    console.log('textfieldOnClick work')
     if (inputInd === inputIndex) {
       setInputIndex("");
     }
@@ -838,6 +839,11 @@ const Appbody = () => {
         >
           <Grid id="answerArea">
             <Grid container item alignItems="center" justifyContent="center">
+              <div className="fakeBox"
+              onClick={() => {
+                textfieldOnClick("A");
+              }}
+              ></div>
               <Typography
                 bgcolor={textfieldColorA}
                 className="hexagonIpuntLeft1"
@@ -850,7 +856,7 @@ const Appbody = () => {
                 className="hexagonIpuntRight1"
                 variant="standard"
                 value={inputA}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true,inputMode: 'none'  }}
                 onClick={() => {
                   textfieldOnClick("A");
                 }}
@@ -862,7 +868,12 @@ const Appbody = () => {
               alignItems="center"
               justifyContent="center"
               sx={{ py: 1.5 }}
-            >
+              >
+              <div className="fakeBox"
+              onClick={() => {
+                textfieldOnClick("B");
+              }}
+              ></div>
               <Typography
                 bgcolor={textfieldColorB}
                 className="hexagonIpuntLeft2"
@@ -875,7 +886,7 @@ const Appbody = () => {
                 className="hexagonIpuntRight2"
                 variant="standard"
                 value={inputB}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true,inputMode: 'none'  }}
                 onClick={() => {
                   textfieldOnClick("B");
                 }}
@@ -887,7 +898,12 @@ const Appbody = () => {
               alignItems="center"
               justifyContent="center"
               sx={{ ml: 1.5 }}
-            >
+             >
+              <div className="fakeBox"
+              onClick={() => {
+                textfieldOnClick("C");
+              }}
+              ></div>
               <Typography
                 className="hexagonIpuntLeft3"
                 bgcolor={textfieldColorC}
@@ -899,12 +915,13 @@ const Appbody = () => {
                 variant="standard"
                 className="hexagonIpuntRight3"
                 value={inputC}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true,inputMode: 'none' }}
                 sx={{ bgcolor: textfieldColorC }}
                 onClick={() => {
                   textfieldOnClick("C");
                 }}
               />
+
 
               <KeyIcon
                 id="key"
