@@ -261,7 +261,7 @@ const ButtonAppBar = (props) => {
             autoHideDuration="1500"
           />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Guess My Rule
+            Guess My Rule Demo
             {/* <Typography sx={{ color: "#EBEBFF", fontSize: 1 }}>
               <lighter>©copyright 2022 by NTUSTMEG</lighter>
             </Typography> */}

@@ -797,7 +797,7 @@ const Appbody = () => {
             color: "#FFFF30",
           }}
         >
-          Level 50-{id}
+          Level 10-{id}
         </h1>
 
         <Grid
